@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'home'}">
+        <h:form>
+
+
+            <ui:remove>
+
+                🔥 פופולרי 
+                <h2>🔥 Popular</h2>
+                <div class="movie-row"> 
+                    <div class="nav-arrow-left">
+                        <h:commandLink rendered="#{movieBean.hasPreviousPopular()}"
+                                       action="#{movieBean.previousPopular()}">
+                            ⬅️
+                            <f:ajax render="@all" />
+                        </h:commandLink>
+                    </div>
+
+                    <div class="movie-content">
+                        <h:graphicImage value="#{movieBean.getMovieImageBase64(movieBean.currentPopularMovie.movieId)}"
+                                        rendered="#{movieBean.currentPopularMovie ne null and movieBean.currentPopularMovie.posterImage ne null}"
+                                        styleClass="poster" />
+                        <div class="movie-details">
+                            <h3>#{movieBean.currentPopularMovie.title}</h3>
+                            <p><b>Released:</b>
+                                <h:outputText value="#{movieBean.currentPopularMovie.dateRelease}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>
+                            </p>
+                            <p><b>Rating:</b>
+                                ★ #{reviewBean.setMovieId(movieBean.currentPopularMovie.movieId)}#{reviewBean.averageRatingForMovie}
+                            </p>
+
+                            *                        <h:commandButton value="Details"
+                                                                      action="#{movieBean.setSelectedMovie(movieBean.currentPopularMovie)}">
+                                <f:setPropertyActionListener target="#{pageController.currentPage}" value="movieDetails" />
+                            </h:commandButton>
+
+                            <h:commandButton value="Borrow"
+                                             action="#{borrowBean.borrowMovie(movieBean.getCurrentMovieForCategory(cat).movieId)}"
+                                             rendered="#{borrowBean.canUserBorrow()}"/>
+                            <h:outputText value="🎯 #{borrowBean.remainingBorrowLimit} left"
+                                          rendered="#{borrowBean.canUserBorrow()}"
+                                          style="font-size: 12px; color: gray;" />
+
+
+                            <h:outputText value="Limit reached"
+                                          rendered="#{!borrowBean.canUserBorrow()}"
+                                          style="color:red; font-size:12px;" />
+
+                        </div>
+                    </div>
+
+                    <div class="nav-arrow-right">
+                        <h:commandLink rendered="#{movieBean.hasNextPopular()}"
+                                       action="#{movieBean.nextPopular()}">
+                            ➡️
+                            <f:ajax render="@all" />
+                        </h:commandLink>
+                    </div>
+                </div>
+
+                <hr/>
+            </ui:remove>
+
+      <!-- 🎞 לפי קטגוריות -->
+<ui:repeat value="#{movieBean.categoryNames}" var="cat">
+
+    <!-- Category Title with Centered Image and Name -->
+    <div style="text-align: center; margin-bottom: 10px;">
+        <img src="#{categoryBean.getCategoryImageByName(cat)}"
+             style="height: 50px; vertical-align: middle;" />
+        <h2 style="display: inline-block; margin-left: 10px; vertical-align: middle;">#{cat}</h2>
+    </div>
+
+    <!-- Horizontal Scrollable Movie Row -->
+<div class="scroll-container">
+    <div class="movie-row">
+        <ui:repeat value="#{movieBean.getVisibleMoviesForCategory(cat)}" var="movie">
+            <div class="movie-wrapper" style ="padding-left: 30px">
+                <ui:include src="movieCard.xhtml">
+                    <ui:param name="movie" value="#{movie}" />
+                </ui:include>
+            </div>
+        </ui:repeat>
+    </div>
+</div>
+
+
+
+
+    <hr/>
+</ui:repeat>
+<h:outputScript target="body">
+    document.addEventListener('DOMContentLoaded', function () {
+        const scrollContainers = document.querySelectorAll('.scroll-container');
+
+        scrollContainers.forEach(container => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            container.addEventListener('mousedown', (e) => {
+                isDown = true;
+                container.classList.add('active');
+                startX = e.pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                isDown = false;
+                container.classList.remove('active');
+            });
+
+            container.addEventListener('mouseup', () => {
+                isDown = false;
+                container.classList.remove('active');
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const walk = (x - startX) * 1.5; // drag speed
+                container.scrollLeft = scrollLeft - walk;
+            });
+        });
+    });
+</h:outputScript>
+
+
+
+
+
+        </h:form>
+    </h:panelGroup>
+</ui:composition>

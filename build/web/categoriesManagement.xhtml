@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <!-- 🔹 דף ניהול סרטים -->
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'categoriesManagement'}">
+        <h1>Categories Management</h1>
+        <!-- 🔹 כפתור חזרה ללוח הבקרה -->
+        <h:form>
+            <h:commandButton value="🔙 Back to Dashboard" action="#{pageController.setPage('admin')}">
+                <f:ajax render="@all"/>
+            </h:commandButton>
+        </h:form>
+
+        <h3>Add New Category</h3>
+        <h:form id="addCategoryFormUpload" enctype="multipart/form-data">
+
+            <h:panelGrid columns="3">
+                <h:outputLabel for="categoryName2" value="Name:" />
+                <h:inputText id="categoryName2" value="#{categoryBean.newCategory.name}" required="true"
+                             requiredMessage="Category name is required!"/>
+                <h:message for="categoryName2" styleClass="error-message"/>
+
+                <h:outputLabel for="categoryDescription2" value="Description:" />
+                <h:inputText id="categoryDescription2" value="#{categoryBean.newCategory.description}" required="true"
+                             requiredMessage="Category description is required!"/>
+                <h:message for="categoryDescription2" styleClass="error-message"/>
+
+                <h:outputLabel for="categoryImage" value="Category Image:" />
+                <h:inputFile id="categoryImage" value="#{categoryBean.uploadedFile}" accept="image/*"/>
+                <h:message for="categoryImage" styleClass="error-message"/>
+
+                <h:commandButton value="Add Category" action="#{categoryBean.addCategory}">
+                    <f:ajax execute="@form" render="addCategoryFormUpload categoryForm addCategoryForm messages"/>
+                </h:commandButton>
+
+
+
+            </h:panelGrid>
+        </h:form>
+
+
+
+        <br/>
+
+        <h:form id="addCategoryForm" >
+
+            <h:dataTable id="categoryTable" value="#{categoryBean.categories}" var="category" border="1">
+
+                <h:column>
+                    <f:facet name="header">Image</f:facet>
+                    <h:graphicImage value="#{categoryBean.getCategoryImageBase64(category.categoryId)}" width="80" height="80"/>
+
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                        #{category.categoryId}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                        #{category.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Description</f:facet>
+                        #{category.description}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+
+                    <!-- 🔹 כפתור עריכה -->
+                    <h:commandButton value="Edit" 
+                                     action="#{categoryBean.loadSelectedCategory}"
+                                     onclick="return confirm('Are you sure you want to edit this category?');">
+                        <f:param name="categoryId" value="#{category.categoryId}" />
+                        <f:ajax execute="@this" render="@all"/>
+                    </h:commandButton>
+
+                    <h:commandButton value="Delete"
+                                     action="#{categoryBean.deleteCategory(category.categoryId)}"
+                                     onclick="return confirm('Are you sure you want to delete this category?');">
+                        <f:ajax execute="@this" render="@all"/>
+                    </h:commandButton>
+
+
+                </h:column>
+
+            </h:dataTable>
+
+
+        </h:form>
+    </h:panelGroup>
+</ui:composition>

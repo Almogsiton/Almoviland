@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'viewReviews'}">
+        <div class="page-container">
+
+            <h2 style="text-align: center;">Reviews for: #{movieBean.selectedMovie.title}</h2>
+
+            <!-- ⭐ ממוצע דירוג -->
+            <p style="text-align: center;">
+                <b>Average Rating:</b>
+                <ui:repeat value="#{reviewBean.getStarList(reviewBean.averageRatingForMovie)}" var="star">
+                    <h:outputText value="#{star ? '★' : '☆'}" style="font-size: 20px;" />
+                </ui:repeat>
+                (#{reviewBean.averageRatingForMovie})
+            </p>
+
+            <!-- הודעות כלליות -->
+            <h:messages globalOnly="true" style="margin-bottom: 20px; color: green;" />
+
+            <!-- רשימת ביקורות -->
+            <ui:repeat value="#{reviewBean.reviewsForMovie}" var="review">
+                <div class="review-box">
+                    <p><b>User:</b> #{review.userId}</p>
+
+                    <p>
+                        <b>Rating:</b>
+                        <ui:repeat value="#{reviewBean.getStarList(review.rating)}" var="s">
+                            <h:outputText value="#{s ? '★' : '☆'}" />
+                        </ui:repeat>
+                        (#{review.rating})
+                    </p>
+
+                    <p><b>Comment:</b> #{review.comment}</p>
+                    <p><small>Posted on: #{review.dateReview}</small></p>
+
+                    <!-- מחיקה: אם המשתמש מחובר ובעל הביקורת -->
+                    <h:form rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.userId eq review.userId}">
+                        <h:commandButton value="🗑 Delete My Review"
+                                         action="#{reviewBean.deleteMyReview}"
+                                         styleClass="delete-btn">
+                            <f:ajax execute="@form" render="@all" />
+                        </h:commandButton>
+                    </h:form>
+
+                    <!-- מחיקה: אם המשתמש מנהל -->
+                    <h:form rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.role eq 'ADMIN'}">
+                        <h:commandButton value="🗑 Delete (Admin)"
+                                         action="#{reviewBean.deleteReviewByAdmin(review.reviewId)}"
+                                         styleClass="delete-btn">
+                            <f:ajax execute="@form" render="@all" />
+                        </h:commandButton>
+                    </h:form>
+                </div>
+            </ui:repeat>
+
+            <!-- חזרה לעמוד הסרט -->
+            <div style="text-align: center; margin-top: 20px;">
+                <h:form>
+                    <h:commandButton value="← Back to Movie"
+                                     action="#{pageController.setPage('movieDetails')}"
+                                     styleClass="secondary-btn" />
+                </h:form>
+            </div>
+
+        </div>
+    </h:panelGroup>
+
+</ui:composition>

@@ -1,0 +1,41 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'login'}">
+        <h1>Login</h1>
+
+        <h:form id="loginForm">
+            <h:panelGrid columns="3">
+                <h:outputLabel for="email" value="Email:"/>
+                <h:inputText id="email" value="#{userBean.loginEmail}" required="true"
+                             requiredMessage="Email is required!"/>
+                <h:message for="email" styleClass="error-message"/>
+
+                <h:outputLabel for="password" value="Password:"/>
+                <h:inputSecret id="password" value="#{userBean.loginPassword}" required="true"
+                               requiredMessage="Password is required!"/>
+                <h:message for="password" styleClass="error-message"/>
+            </h:panelGrid>
+
+
+            <!-- 🔹 יישור הכפתורים לאותו קו -->
+            <h:panelGrid columns="2" styleClass="button-container">
+                <h:commandButton value="Login" action="#{userBean.loginUser}">
+                    <f:ajax execute="@form" render="@all"/>
+                </h:commandButton>
+
+                <h:commandButton value="Create Account" action="#{pageController.setPage('register')}">
+                    <f:ajax execute="@form" render="@all"/>
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:messages id="messages" globalOnly="true" showDetail="true"
+                        infoClass="success-message" errorClass="error-message"/>
+        </h:form>
+
+
+    </h:panelGroup>
+</ui:composition>

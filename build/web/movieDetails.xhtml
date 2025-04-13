@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'movieDetails'}">
+        <div class="modal-overlay">
+            <div class="modal-dialog">
+
+                <h:form>
+                    <div class="movie-dialog-content">
+                        <div class="poster-section">
+                            <h:graphicImage value="#{movieBean.getMovieImageBase64(movieBean.selectedMovie.movieId)}"
+                                            styleClass="modal-poster"/>
+                        </div>
+
+                        <div class="info-section">
+                            <h2 class="movie-title">#{movieBean.selectedMovie.title}</h2>
+
+                            <p>
+                                <span class="label">📅 </span>
+                                <h:outputText value="#{movieBean.selectedMovie.dateRelease}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                </h:outputText>
+                            </p>
+
+                            <p class="stars">
+                                <span class="label">⭐</span>
+                                <ui:repeat value="#{reviewBean.getStarList(reviewBean.averageRatingForMovie)}" var="full">
+                                    <h:outputText value="#{full ? '★' : '☆'}"/>
+                                </ui:repeat>
+                            </p>
+
+                            <p>#{movieBean.selectedMovie.description}</p>
+                            <p><b>Available:</b> #{movieBean.selectedMovie.copiesAvailable}</p>
+
+                            <div class="dialog-buttons">
+                                <h:outputText value="🎯 You can borrow #{borrowBean.remainingBorrowLimit} more"
+                                              rendered="#{borrowBean.canUserBorrow()}"
+                                              style="font-size: 13px; color: #555; margin-bottom: 10px;" />
+
+                                <h:commandButton value="🎟 Borrow"
+                                                 action="#{borrowBean.borrowMovie(movieBean.selectedMovie.movieId)}"
+                                                 rendered="#{borrowBean.canUserBorrow()}"
+                                                 styleClass="action-btn">
+                                    <f:ajax execute="@form" render="@all" />
+                                </h:commandButton>
+
+                                <h:outputText rendered="#{!borrowBean.canUserBorrow()}"
+                                              value="❌ You have reached your borrowing limit"
+                                              style="color: red; font-weight: bold; margin-bottom: 10px;" />
+
+                                <h:commandButton value="✖ Close"
+                                                 action="#{pageController.setPage('home')}"
+                                                 styleClass="close-btn">
+                                    <f:ajax execute="@this" render="@all"/>
+                                </h:commandButton>
+
+                                <!-- כפתור להוספת ביקורת -->
+                                <h:commandButton value="➕ Add Review"
+                                                 action="#{pageController.setPage('addReview')}"
+                                                 rendered="#{userBean.loggedInUser != null}"
+                                                 styleClass="action-btn" />
+
+                                <!-- כפתור לצפייה בביקורות -->
+                                <h:commandButton value="📝 View Reviews"
+                                                 action="#{pageController.setPage('viewReviews')}"
+                                                 styleClass="secondary-btn" />
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+
+            </div>
+        </div>
+    </h:panelGroup>
+</ui:composition>

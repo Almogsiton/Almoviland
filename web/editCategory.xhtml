@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'editCategory'}">
+        <h1>Manage Category</h1>
+        <h:form>
+            <h:commandButton value="Back to Categories Management" action="#{pageController.setPage('categoriesManagement')}">
+                <f:ajax execute="@form" render="@all"/>
+            </h:commandButton>
+        </h:form>
+      
+        <h:form id="manageCategoryForm" enctype="multipart/form-data">
+            <h:panelGrid columns="2">
+
+                <h:outputLabel for="editCategoryName" value="Category Name:"/>
+                <h:inputText id="editCategoryName" value="#{categoryBean.selectedCategory.name}" required="true" readonly="true"/>
+
+                <h:outputLabel for="editCategoryDescription" value="Description:"/>
+                <h:inputText id="editCategoryDescription" value="#{categoryBean.selectedCategory.description}" required="true"/>
+
+                <h:outputLabel for="currentImage" value="Current Image:"/>
+                <h:graphicImage value="#{categoryBean.getCategoryImageBase64(categoryBean.selectedCategory.categoryId)}"
+                                width="100" height="100"/>
+
+                <h:outputLabel for="editCategoryImage" value="New Image (optional):"/>
+                <h:inputFile id="editCategoryImage" value="#{categoryBean.uploadedFile}" accept="image/*"/>
+
+            </h:panelGrid>
+
+            <!-- 🔹 כפתור שמירת שינויים -->
+            <h:commandButton value="Update Category"
+                             action="#{categoryBean.updateCategory}"
+                             styleClass="confirm-edit">
+                <f:ajax execute="@form" render="@all" />
+            </h:commandButton>
+
+
+
+        </h:form>
+    </h:panelGroup>
+
+</ui:composition>

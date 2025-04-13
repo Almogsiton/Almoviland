@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    </h:head>
+
+    <h:form>
+        <div class="nav-links">
+            <h:commandLink class="nav-link" action="#{pageController.setPage('home')}">
+                <f:ajax render="@all"/>
+                <i class="fas fa-home nav-icon"></i> Home
+            </h:commandLink>
+            <h:commandLink class="nav-link" action="#{pageController.setPage('search')}">
+                <f:ajax render="@all"/>
+                <i class="fas fa-search nav-icon"></i> Search
+            </h:commandLink>
+
+            <!-- הצגת אפשרויות בהתאם למצב המשתמש -->
+            <h:panelGroup rendered="#{userBean.loggedInUser == null}">
+                <h:commandLink class="nav-link" action="#{pageController.setPage('login')}">
+                    <f:ajax render="@all"/>
+                    <i class="fas fa-sign-in-alt nav-icon"></i> Login
+                </h:commandLink>
+                <h:commandLink class="nav-link" action="#{pageController.setPage('register')}">
+                    <f:ajax render="@all"/>
+                    <i class="fas fa-user-plus nav-icon"></i> Register
+                </h:commandLink>
+            </h:panelGroup>
+
+
+            <h:commandLink class="nav-link" action="#{pageController.setPage('contact')}">
+                <f:ajax render="@all"/>
+                <i class="fas fa-envelope nav-icon"></i> Contact Us
+            </h:commandLink>
+
+
+
+            <!-- 🔹 כפתור Admin Dashboard יוצג רק למנהלים -->
+            <h:panelGroup rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.role eq 'ADMIN'}">
+                <h:commandLink class="nav-link" action="#{pageController.setPage('admin')}">
+                    <f:ajax render="@all"/>
+                    <i class="fas fa-tachometer-alt nav-icon"></i> Admin Dashboard
+                </h:commandLink>
+            </h:panelGroup>
+
+            <!-- ✅ מוצג רק אם המשתמש מחובר: כפתור פרופיל, שלום, וכפתור יציאה -->
+            <h:panelGroup rendered="#{userBean.loggedInUser != null}">
+                <h:commandLink class="nav-link" action="#{pageController.setPage('profile')}">
+                    <f:ajax render="@all"/>
+                    <i class="fas fa-user-circle nav-icon"></i> Profile
+                </h:commandLink>
+
+                <h:outputText value="Hello, #{userBean.loggedInUser.name}!" style="margin-left: 10px; margin-right: 10px;"/>
+
+                <h:commandButton value="Logout" action="#{userBean.logoutUser}" styleClass="logout-button">
+                    <f:ajax execute="@form" render="@all"/>
+                </h:commandButton>
+            </h:panelGroup>
+
+
+        </div>
+    </h:form>
+
+</ui:composition>

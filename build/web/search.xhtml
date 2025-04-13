@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form styleClass="search-form">
+        <div class="search-bar">
+            <h:inputText value="#{movieBean.searchQuery}"
+                         styleClass="search-input"
+                      >
+                <f:ajax event="keyup" listener="#{movieBean.searchMovies}" render="results"/>
+            </h:inputText>
+        </div>
+
+        <h:panelGroup id="results">
+            <h3>🔍 Results</h3>
+
+            <h:panelGroup rendered="#{not empty movieBean.searchResults}">
+                <div class="movie-row">
+                    <ui:repeat value="#{movieBean.searchResults}" var="movie">
+                        <ui:include src="movieCard.xhtml">
+                            <ui:param name="movie" value="#{movie}" />
+                        </ui:include>
+                    </ui:repeat>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{empty movieBean.searchResults and not empty movieBean.searchQuery}">
+                <p>No movies found matching "<strong>#{movieBean.searchQuery}</strong>".</p>
+            </h:panelGroup>
+        </h:panelGroup>
+    </h:form>
+</ui:composition>

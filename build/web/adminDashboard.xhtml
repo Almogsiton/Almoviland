@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'admin'}">
+                <h1>Admin Dashboard</h1>
+                <p>Manage movies, users, and settings here.</p>
+
+                <h:form>
+                    <!-- 🔹 כפתור מעבר לניהול סרטים -->
+                    <h:commandButton value="Movies Management" action="#{pageController.setPage('moviesManagement')}">
+                        <f:ajax render="@all"/>
+                    </h:commandButton>
+                    
+                    <!-- 🔹 כפתור מעבר לניהול קטגוריות -->
+                    <h:commandButton value="Categories Management" action="#{pageController.setPage('categoriesManagement')}">
+                        <f:ajax render="@all"/>
+                    </h:commandButton>
+                    
+                    <!-- 🔹 כפתור לניהול משתמשים -->
+            <h:commandButton value="Users Management" action="#{pageController.setPage('usersManagement')}">
+                <f:ajax render="@all"/>
+            </h:commandButton>
+                </h:form>
+
+            </h:panelGroup>
+
+</ui:composition>

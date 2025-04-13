@@ -1,0 +1,40 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:panelGroup rendered="#{pageController.currentPage eq 'userBorrowingHistory'}">
+        <h1>Borrowing History</h1>
+
+        <!-- 🔹 כפתור חזרה -->
+        <h:form>
+            <h:commandButton value="🔙 Back" action="#{pageController.setPage('usersManagement')}">
+                <f:ajax execute="@form" render="@all"/>
+            </h:commandButton>
+        </h:form>
+
+        <h:form id="borrowingTableForm">
+            <h:dataTable value="#{userBean.borrowingHistory}" var="borrowing" border="1">
+                <h:column>
+                    <f:facet name="header">Movie Title</f:facet>
+                        #{movieBean.getMovieTitleById(borrowing.movieId)}
+                </h:column>
+
+
+                <h:column>
+                    <f:facet name="header">Borrow Date</f:facet>
+                        #{borrowing.borrowDate}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Return Date</f:facet>
+                        #{borrowing.returnDate != null ? borrowing.returnDate : 'Not Returned'}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                        #{borrowing.returnDate != null ? 'Returned' : 'Borrowed'}
+                </h:column>
+            </h:dataTable>
+        </h:form>
+    </h:panelGroup>
+</ui:composition>
