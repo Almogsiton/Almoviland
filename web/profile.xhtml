@@ -3,13 +3,20 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Displays the logged-in user's profile including active and past borrowings.
+    2. Allows users to return movies or report them as lost.
+    3. Shows borrowing limits and borrowing history.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'profile'}">
         <h:form>
 
-            <h2>👤 My Profile</h2>
+            <h2 class="page-title">👤 My Profile</h2>
 
             <p>
-                Hello, <strong>#{userBean.loggedInUser.name}</strong>!
+                Hello, <strong>#{userBean.loggedInUser.name}</strong>!<br/>
                 You can borrow <strong>#{borrowBean.remainingBorrowLimit}</strong> more movie(s).<br/>
                 Total borrowed so far: <strong>#{borrowBean.totalBorrowingsByUser}</strong>
             </p>
@@ -23,29 +30,78 @@
             <h:dataTable value="#{borrowBean.currentBorrowedByUser}" var="borrow" styleClass="borrow-table">
                 <h:column>
                     <f:facet name="header">Title</f:facet>
-                    #{movieBean.getMovieTitleById(borrow.movieId)}
+                        #{movieBean.getMovieTitleById(borrow.movieId)}
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Borrowed On</f:facet>
                     <h:outputText value="#{borrow.borrowDate}">
-                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                        <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+3"/>
                     </h:outputText>
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">Action</f:facet>
-                    <h:commandButton value="Return" action="#{borrowBean.returnMovie(borrow.movieId)}">
-                        <f:ajax execute="@this" render="@all"/>
-                    </h:commandButton>
+                    <f:facet name="header">Action</f:facet>                    
+
+                    <h:panelGroup rendered="#{borrow.status eq 'PENDING_LOSS'}">
+                        <p class="loss-pending-message">❗ Loss report pending approval</p>
+                    </h:panelGroup>
+                    
+                    <h:panelGroup rendered="#{borrow.status ne 'PENDING_LOSS'}">
+                        <h:commandButton value="Return"
+                                         action="#{borrowBean.returnMovie(borrow.movieId)}"
+                                         styleClass="action-btn">
+                            <f:ajax execute="@this" render="@all"/>
+                        </h:commandButton>
+
+                        <h:commandButton value="Report as Lost"
+                                         action="#{borrowBean.initLossRequest(borrow.movieId)}"
+                                         styleClass="action-btn">
+                            <f:ajax execute="@this" render="@all"/>
+                        </h:commandButton>
+                    </h:panelGroup>
+
                 </h:column>
             </h:dataTable>
 
             <br/>
             <h:commandButton value="⬅️ Back to Home"
-                             action="#{pageController.setPage('home')}">
+                             action="#{pageController.setPage('home')}"
+                             styleClass="action-btn">
                 <f:ajax render="@all"/>
             </h:commandButton>
+
+            <h3>📜 Borrowing History</h3>
+
+            <h:panelGroup rendered="#{empty borrowBean.borrowingHistoryByUser}">
+                <p>❌ No borrowing history yet.</p>
+            </h:panelGroup>
+
+            <h:dataTable value="#{borrowBean.borrowingHistoryByUser}" var="history" styleClass="borrow-table" rendered="#{not empty borrowBean.borrowingHistoryByUser}">
+                <h:column>
+                    <f:facet name="header">Title</f:facet>
+                        #{movieBean.getMovieTitleById(history.movieId)}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Borrowed On</f:facet>
+                    <h:outputText value="#{history.borrowDate}">
+                        <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+3"/>
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Returned On</f:facet>
+                    <h:outputText value="#{history.returnDate}">
+                        <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+3"/>
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    <h:outputText value="#{history.status != null ? history.status : (history.returnDate != null ? 'Returned' : 'Borrowed')}"/>
+                </h:column>
+            </h:dataTable>
 
         </h:form>
     </h:panelGroup>

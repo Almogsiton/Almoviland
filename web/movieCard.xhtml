@@ -1,87 +1,16 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
-
-    <style>
-        .movie-card {
-            position: relative;
-            width: 200px;
-            height: 300px;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: #111;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease-in-out;
-            cursor: pointer;
-        }
-
-        .movie-card:hover {
-            transform: scale(1.05);
-        }
-
-        .poster {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-title {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-            padding: 8px;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            z-index: 2;
-        }
-
-        .overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            padding: 12px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-in-out;
-            font-size: 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            z-index: 3;
-        }
-
-        .movie-card:hover .overlay {
-            transform: translateY(0);
-        }
-
-        .icon-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-size: 1.5em;
-        }
-
-        .icon-btn:hover {
-            color: #f44;
-        }
-    </style>
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <!--
+    Page Purpose:
+    1. Displays a single movie card with title, image, release date, and average rating.
+    2. Allows users to view movie details or borrow the movie (if allowed).
+    3. Includes hover overlay for interactive actions and additional info.
+    -->
 
     <h:panelGroup layout="block" styleClass="movie-card">
-<img src="#{movieBean.getMovieImageBase64(movie.movieId)}" class="poster" />
+        <img src="#{movieBean.getMovieImageBase64(movie.movieId)}" class="poster" />
 
         <!-- Always show title -->
         <div class="card-title">
@@ -96,6 +25,8 @@
                 </h:outputText>
             </p>
             <p><b>⭐ Rating:</b> #{reviewBean.setMovieId(movie.movieId)}#{reviewBean.averageRatingForMovie}</p>
+            
+            <p><b>📦 In Stock:</b> #{movie.copiesAvailable} available</p>
 
             <div class="icon-actions">
                 <h:commandLink styleClass="icon-btn" action="#{movieBean.setSelectedMovie(movie)}">
@@ -104,18 +35,19 @@
                 </h:commandLink>
 
                 <h:commandLink styleClass="icon-btn" action="#{borrowBean.borrowMovie(movie.movieId)}"
-                               rendered="#{borrowBean.canUserBorrow()}">
+                               rendered="#{borrowBean.canUserBorrow()}"
+                               onclick="return confirm('Do you want to borrow this movie?');">
                     <i class="fa fa-plus-circle" title="Borrow"></i>
                 </h:commandLink>
-                <h:outputText value="🎯 #{borrowBean.remainingBorrowLimit} left"
-              rendered="#{borrowBean.canUserBorrow()}"
-              style="font-size: 12px; color: #ccc; display: block; text-align: center;" />
-
-                <h:outputText rendered="#{!borrowBean.canUserBorrow()}" 
-                              value="Limit reached" 
-                              style="color: #f99; font-size: 12px;" />
-
             </div>
+
+            <h:outputText value="🎯 #{borrowBean.remainingBorrowLimit} left"
+                          rendered="#{borrowBean.canUserBorrow()}"
+                          styleClass="remaining-borrow" />
+
+            <h:outputText rendered="#{!borrowBean.canUserBorrow()}" 
+                          value="Limit reached" 
+                          styleClass="limit-reached" />
         </div>
     </h:panelGroup>
 

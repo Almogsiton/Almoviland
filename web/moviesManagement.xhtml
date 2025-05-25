@@ -2,31 +2,33 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
-    
+
+    <!--
+    Page Purpose:
+    1. Allows admins to add new movies, including details like title, categories, description, copies, release date, and poster.
+    2. Displays a table of existing movies with options to edit or delete each entry.
+    3. Provides buttons to return to the admin dashboard and to recount inventory for all movies.
+    -->
 
     <h:panelGroup rendered="#{pageController.currentPage eq 'moviesManagement'}">
         <h1>Movies Management</h1>
-
-
-
-        <!-- 🔹 כפתור חזרה ללוח הבקרה -->
+        
         <h:form>
-            <h:commandButton value="🔙 Back to Dashboard" action="#{pageController.setPage('admin')}">
+            <h:commandButton value="🔙 Back to Dashboard" styleClass="action-btn" action="#{pageController.setPage('admin')}">
                 <f:ajax execute="@form" render="@all"/>
             </h:commandButton>
-            
-             <h:commandButton value="🔁 Recount Inventory"
-                     action="#{movieBean.recountInventory}"
-                     onclick="return confirm('Are you sure you want to recount the inventory for all movies?');">
-        <f:ajax execute="@form" render="@all"/>
-    </h:commandButton>
-            
+
+            <h:commandButton value="🔁 Recount Inventory" styleClass="action-btn"
+                             action="#{movieBean.recountInventory}"
+                             onclick="return confirm('Are you sure you want to recount the inventory for all movies?');">
+                <f:ajax execute="@form" render="@all"/>
+            </h:commandButton>
 
         </h:form>
 
         <h3>Add New Movie</h3>
 
-        <!-- 🔹 טופס הוספת סרטים -->
+        <!-- 🔹 Form: Add New Movie -->
         <h:form id="addMovieForm" enctype="multipart/form-data">
 
             <h:panelGrid columns="1">
@@ -70,35 +72,29 @@
 
                 </h:inputText>
 
-
-
-
-
                 <h:message for="dateRelease" styleClass="error-message"/>
-                <!-- 🔹 שדה להעלאת תמונה -->
+                
                 <h:outputLabel for="poster" value="Upload Poster:"/>
                 <h:inputFile id="poster" value="#{movieBean.uploadedFile}" required="false"/>
 
             </h:panelGrid>
 
-            <h:commandButton value="Add Movie"
+            <h:commandButton value="Add Movie" styleClass="action-btn"
                              action="#{movieBean.addMovie}"
                              onclick="return confirm('Do you want to add this movie?');">
                 <f:ajax execute="@form" render="@all"/>
             </h:commandButton>
 
-
-
         </h:form>
 
         <br/>
 
-        <!-- 🔹 טבלת סרטים -->
+        <!-- 🔹 Table of Movies -->
         <h:form id="movieTableForm">
             <h:dataTable id="movieTable" value="#{movieBean.movies}" var="movie" border="1">
                 <h:column>
                     <f:facet name="header">Poster</f:facet>
-                    <h:graphicImage value="#{movieBean.getMovieImageBase64(movie.movieId)}" width="100" height="150"/>
+                    <h:graphicImage value="#{movieBean.getMovieImageBase64(movie.movieId)}" styleClass="edit-poster"/>
 
                 </h:column>
                 <h:column>
@@ -111,7 +107,7 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Category</f:facet>
-                    #{movie.categoryNames} 
+                        #{movie.categoryNames} 
                 </h:column>
                 <h:column>
                     <f:facet name="header">Description</f:facet>
@@ -131,20 +127,16 @@
                 </h:column>
                 <h:column>    
                     <f:facet name="header">Actions</f:facet>
-                    <!-- 🔹 כפתור עריכה -->
-                    <h:commandButton value="Edit" action="#{movieBean.loadSelectedMovie}"
+                    
+                    <!-- 🔹 Button: Edit -->
+                    <h:commandButton value="Edit" action="#{movieBean.loadSelectedMovie}" styleClass="action-btn"
                                      onclick="return confirm('Are you sure you want to edit this movie?');">
-                                     <f:ajax execute="@this" render="@all"/>
+                        <f:ajax execute="@this" render="@all"/>
                         <f:param name="movieId" value="#{movie.movieId}" />
                     </h:commandButton>
 
-
-
-
-
-
-                    <!-- 🔹 כפתור מחיקה -->
-                    <h:commandButton value="Delete"
+                    <!-- 🔹 Button: Delete -->
+                    <h:commandButton value="Delete" styleClass="action-btn"
                                      action="#{movieBean.deleteMovie(movie.movieId)}"
                                      onclick="return confirm('Are you sure you want to delete this movie?');">
                         <f:ajax execute="@this" render="@all"/>

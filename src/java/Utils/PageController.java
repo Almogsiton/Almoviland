@@ -6,6 +6,8 @@ import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import config.AppConfig;
+import Bean.MovieBean;
+import jakarta.inject.Inject;
 
 /**
  * Managed Bean responsible for handling page navigation within the system.
@@ -15,7 +17,9 @@ import config.AppConfig;
 @SessionScoped
 public class PageController implements Serializable {
 
-    private String currentPage = AppConfig.getDefaultPage();
+    @Inject
+    private MovieBean movieBean;
+    private String currentPage = AppConfig.getDefaultPage();// Holds the name of the current page the user is viewing
 
     /**
      * Returns the current page name.
@@ -49,6 +53,7 @@ public class PageController implements Serializable {
 
         if (page != null && !page.isEmpty()) {
             System.out.println("🔄 Switching to page: " + page);
+            movieBean.init();
             this.currentPage = page;
 
         } else {
@@ -80,4 +85,5 @@ public class PageController implements Serializable {
         this.currentPage = "home";
         System.out.println("🏠 Navigating to: Home Page");
     }
+
 }

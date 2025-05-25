@@ -3,11 +3,17 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Provides a live search interface for users to find movies by title.
+    2. Displays paginated search results dynamically as the user types.
+    3. Shows total result count and allows navigation between result pages.
+    -->
+
     <h:form styleClass="search-form">
         <div class="search-bar">
             <h:inputText value="#{movieBean.searchQuery}"
-                         styleClass="search-input"
-                      >
+                         styleClass="search-input">
                 <f:ajax event="keyup" listener="#{movieBean.searchMovies}" render="results"/>
             </h:inputText>
         </div>
@@ -16,18 +22,44 @@
             <h3>🔍 Results</h3>
 
             <h:panelGroup rendered="#{not empty movieBean.searchResults}">
+
+                <!-- Display result count -->
+                <h4>Found #{movieBean.searchResults.size()} result(s)</h4>
+
                 <div class="movie-row">
-                    <ui:repeat value="#{movieBean.searchResults}" var="movie">
+                    <!-- Show only the movies for the current page -->
+                    <ui:repeat value="#{movieBean.visibleSearchResults}" var="movie">
                         <ui:include src="movieCard.xhtml">
                             <ui:param name="movie" value="#{movie}" />
                         </ui:include>
                     </ui:repeat>
                 </div>
+
+                <!-- Pagination buttons -->
+                <div class="pagination-controls">
+                    <h:commandLink rendered="#{movieBean.hasPreviousSearchPage()}"
+                                   action="#{movieBean.previousSearchPage()}"
+                                   styleClass="scroll-arrow">
+                        <span>❮</span>
+                        <f:ajax render="results" />
+                    </h:commandLink>
+
+                    <h:commandLink rendered="#{movieBean.hasNextSearchPage()}"
+                                   action="#{movieBean.nextSearchPage()}"
+                                   styleClass="scroll-arrow">
+                        <span>❯</span>
+                        <f:ajax render="results" />
+                    </h:commandLink>
+                </div>
+
             </h:panelGroup>
 
-            <h:panelGroup rendered="#{empty movieBean.searchResults and not empty movieBean.searchQuery}">
-                <p>No movies found matching "<strong>#{movieBean.searchQuery}</strong>".</p>
+            <!-- Message shown when no results are found -->
+            <h:panelGroup rendered="#{empty movieBean.searchResults and not empty movieBean.searchQuery}"
+                          styleClass="empty-results">
+                No movies found matching "<strong>#{movieBean.searchQuery}</strong>".
             </h:panelGroup>
+
         </h:panelGroup>
     </h:form>
 </ui:composition>

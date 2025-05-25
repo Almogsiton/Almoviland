@@ -3,14 +3,21 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Allows the admin to update an existing category's description and image.
+    2. Displays current category details including name and poster.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'editCategory'}">
         <h1>Manage Category</h1>
         <h:form>
-            <h:commandButton value="Back to Categories Management" action="#{pageController.setPage('categoriesManagement')}">
-                <f:ajax execute="@form" render="@all"/>
+            <h:commandButton value="Back to Categories Management"
+                             action="#{pageController.setPage('categoriesManagement')}"
+                             styleClass="action-btn">
             </h:commandButton>
         </h:form>
-      
+
         <h:form id="manageCategoryForm" enctype="multipart/form-data">
             <h:panelGrid columns="2">
 
@@ -22,22 +29,18 @@
 
                 <h:outputLabel for="currentImage" value="Current Image:"/>
                 <h:graphicImage value="#{categoryBean.getCategoryImageBase64(categoryBean.selectedCategory.categoryId)}"
-                                width="100" height="100"/>
+                                styleClass="thumbnail"/>
 
                 <h:outputLabel for="editCategoryImage" value="New Image (optional):"/>
                 <h:inputFile id="editCategoryImage" value="#{categoryBean.uploadedFile}" accept="image/*"/>
 
             </h:panelGrid>
 
-            <!-- 🔹 כפתור שמירת שינויים -->
             <h:commandButton value="Update Category"
                              action="#{categoryBean.updateCategory}"
-                             styleClass="confirm-edit">
+                             styleClass="action-btn">
                 <f:ajax execute="@form" render="@all" />
             </h:commandButton>
-
-
-
         </h:form>
     </h:panelGroup>
 

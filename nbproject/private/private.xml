@@ -3,20 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/UserBean.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/addReview.xhtml</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/MovieBean.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/ReviewBean.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/BorrowBean.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/PageController.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/index.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/adminLossRequests.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/reportLoss.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/Bean/MovieBean.java</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/editMovie.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/adminDashboard.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/movieCard.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/DAO/BorrowingDAO.java</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/login.xhtml</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/config/AppConfig.java</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/usersManagement.xhtml</file>
             <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/home.xhtml</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/Movie.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/PasswordMatchValidator.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/MovieDAO.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/viewReviews.xhtml</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/ReviewDAO.java</file>
-            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/src/java/MovieBean/Almoviland.java</file>
+            <file>file:/C:/Users/almog/Documents/NetBeansProjects/Almoviland/web/profile.xhtml</file>
         </group>
     </open-files>
 </project-private>

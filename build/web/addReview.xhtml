@@ -3,53 +3,67 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Allows a logged-in user to submit a review for the selected movie.
+    2. Provides a rating selection (1–5) and a text comment.
+    3. Displays feedback messages and allows returning to the movie details page.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'addReview'}">
-        <div class="page-container">
+        <div class="form-wrapper">
 
-            <h:form styleClass="review-form">
+            <h2 class="page-title">Add Review for: #{movieBean.selectedMovie.title}</h2>
 
-                <h2 style="text-align: center;">Add Review for: #{movieBean.selectedMovie.title}</h2>
+            <!-- Form for review submission -->
+            <h:form id="reviewForm">
 
-                <!-- תגובה -->
-                <h:outputLabel for="comment" value="Your Comment:" />
-                <h:inputTextarea id="comment" value="#{reviewBean.comment}" required="true"
-                                 styleClass="textarea" />
-                <h:message for="comment" style="color: red;" />
+                <div class="form-grid">
 
-                <!-- דירוג -->
-                <h:outputLabel for="rating" value="Rating (1 to 5):" />
-                <h:selectOneMenu id="rating" value="#{reviewBean.rating}" required="true"
-                                 styleClass="select">
-                    <f:selectItem itemLabel="Select Rating" itemValue="" />
-                    <f:selectItem itemLabel="1 - Poor" itemValue="1" />
-                    <f:selectItem itemLabel="2 - Fair" itemValue="2" />
-                    <f:selectItem itemLabel="3 - Good" itemValue="3" />
-                    <f:selectItem itemLabel="4 - Very Good" itemValue="4" />
-                    <f:selectItem itemLabel="5 - Excellent" itemValue="5" />
-                </h:selectOneMenu>
-                <h:message for="rating" style="color: red;" />
+                    <h:outputLabel for="comment" value="Your Comment:" />
+                    <h:inputTextarea id="comment" value="#{reviewBean.comment}" required="true" styleClass="form-input" />
+                    <h:message for="comment" styleClass="error-message" />
 
-                <!-- כפתורים -->
-                <div style="margin-top: 20px;">
+                    <h:outputLabel for="rating" value="Rating (1 to 5):" />
+                    <h:selectOneMenu id="rating" value="#{reviewBean.rating}" required="true" styleClass="form-input">
+                        <f:selectItem itemLabel="Select Rating" itemValue="" />
+                        <f:selectItem itemLabel="1 - Poor" itemValue="1" />
+                        <f:selectItem itemLabel="2 - Fair" itemValue="2" />
+                        <f:selectItem itemLabel="3 - Good" itemValue="3" />
+                        <f:selectItem itemLabel="4 - Very Good" itemValue="4" />
+                        <f:selectItem itemLabel="5 - Excellent" itemValue="5" />
+                    </h:selectOneMenu>
+                    <h:message for="rating" styleClass="error-message" />
+                </div>
+
+                <div class="button-container">
                     <h:commandButton value="Submit Review"
                                      action="#{reviewBean.submitReview}"
                                      styleClass="action-btn">
                         <f:ajax execute="@form" render="@form messages" />
                     </h:commandButton>
-
-                    <h:commandButton value="Back to Movie"
-                                     action="#{pageController.setPage('movieDetails')}"
-                                     styleClass="secondary-btn"
-                                     style="margin-left: 10px;" />
                 </div>
 
-                <!-- הודעות כלליות -->
-                <h:messages id="messages" globalOnly="true"
-                            style="margin-top: 15px; color: green;" />
+                <h:messages id="messages"
+                            globalOnly="true"
+                            showDetail="true"
+                            errorClass="error-message"
+                            infoClass="success-message"
+                            warnClass="warning-message"
+                            fatalClass="fatal-message" />
 
+            </h:form>
+
+            <!-- Separate form for the back button -->
+            <h:form id="backForm">
+                <div class="button-container">
+                    <h:commandButton value="Back to Movie"
+                                     action="#{pageController.setPage('movieDetails')}"
+                                     immediate="true"
+                                     styleClass="secondary-btn" />
+                </div>
             </h:form>
 
         </div>
     </h:panelGroup>
-
 </ui:composition>

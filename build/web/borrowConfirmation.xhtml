@@ -3,19 +3,24 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Confirms to the user that the movie borrowing was successful.
+    2. Displays key details of the transaction: movie title, borrow date, remaining copies, and allowed borrows.
+    3. Shows a modal dialog with option to return to the homepage.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'borrowConfirmation'}">
         <div class="modal-overlay">
             <div class="modal-dialog">
 
                 <h:form>
-                    <div class="movie-dialog-content">
-                        <!-- תמונת הסרט -->
+                    <div class="movie-dialog-content">                        
                         <div class="poster-section">
                             <h:graphicImage value="#{movieBean.getMovieImageBase64(borrowBean.selectedMovie.movieId)}"
                                             styleClass="modal-poster"/>
                         </div>
 
-                        <!-- מידע על ההשאלה -->
                         <div class="info-section">
                             <h2 class="movie-title">Borrow Confirmed 🎉</h2>
 
@@ -41,7 +46,6 @@
                                 #{borrowBean.remainingBorrowsAfterBorrow}
                             </p>
 
-                            <!-- כפתור חזרה -->
                             <div class="dialog-buttons">
                                 <h:commandButton value="🏠 Back to Home"
                                                  action="#{pageController.setPage('home')}"

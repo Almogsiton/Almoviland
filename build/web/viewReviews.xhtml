@@ -3,69 +3,86 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Displays all user reviews for the selected movie, including rating, comment, and posting date.
+    2. Shows the average movie rating with a star-based visual.
+    3. Allows users to delete their own reviews, and admins to delete any review.
+    4. Provides a button to return to the movie details page.
+    -->
+
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'viewReviews'}">
         <div class="page-container">
 
-            <h2 style="text-align: center;">Reviews for: #{movieBean.selectedMovie.title}</h2>
+            <!-- 🔔 Global messages -->
+            <h:form>
+                <h:messages globalOnly="true"
+                            showDetail="true"
+                            errorClass="error-message"
+                            infoClass="success-message"
+                            warnClass="warning-message"
+                            fatalClass="fatal-message" />
+            </h:form>
 
-            <!-- ⭐ ממוצע דירוג -->
-            <p style="text-align: center;">
+            <!-- 🔹 Page title -->
+            <h2 class="page-title">Reviews for: #{movieBean.selectedMovie.title}</h2>
+
+            <!-- ⭐ Average Rating -->
+            <p class="avg-rating-text">
                 <b>Average Rating:</b>
-                <ui:repeat value="#{reviewBean.getStarList(reviewBean.averageRatingForMovie)}" var="star">
-                    <h:outputText value="#{star ? '★' : '☆'}" style="font-size: 20px;" />
-                </ui:repeat>
-                (#{reviewBean.averageRatingForMovie})
+                <ui:repeat value="#{reviewBean.getStarList(reviewBean.getAverageRatingForMovie(movieBean.selectedMovie.movieId))}" var="star">
+    <h:outputText value="#{star ? '★' : '☆'}" styleClass="rating-star" />
+</ui:repeat>
+                (#{reviewBean.getAverageRatingForMovie(movieBean.selectedMovie.movieId)})
             </p>
 
-            <!-- הודעות כלליות -->
-            <h:messages globalOnly="true" style="margin-bottom: 20px; color: green;" />
-
-            <!-- רשימת ביקורות -->
+            <!-- 🔁 Review List -->
             <ui:repeat value="#{reviewBean.reviewsForMovie}" var="review">
                 <div class="review-box">
-                    <p><b>User:</b> #{review.userId}</p>
+                    <p><b>User:</b> #{reviewBean.getUserNameById(review.userId)}</p>
 
                     <p>
                         <b>Rating:</b>
                         <ui:repeat value="#{reviewBean.getStarList(review.rating)}" var="s">
-                            <h:outputText value="#{s ? '★' : '☆'}" />
+                            <h:outputText value="#{s ? '★' : '☆'}" styleClass="rating-star" />
                         </ui:repeat>
                         (#{review.rating})
                     </p>
 
                     <p><b>Comment:</b> #{review.comment}</p>
-                    <p><small>Posted on: #{review.dateReview}</small></p>
+                    <p><small>📅 Posted on: #{review.dateReview}</small></p>
 
-                    <!-- מחיקה: אם המשתמש מחובר ובעל הביקורת -->
+                    <!-- ❌ Delete My Review (User only) -->
                     <h:form rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.userId eq review.userId}">
                         <h:commandButton value="🗑 Delete My Review"
-                                         action="#{reviewBean.deleteMyReview}"
-                                         styleClass="delete-btn">
+                                         action="#{reviewBean.deleteReviewById(review.reviewId)}"
+                                         styleClass="danger-btn">
                             <f:ajax execute="@form" render="@all" />
                         </h:commandButton>
                     </h:form>
 
-                    <!-- מחיקה: אם המשתמש מנהל -->
+                    <!-- ❌ Delete by Admin -->
                     <h:form rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.role eq 'ADMIN'}">
                         <h:commandButton value="🗑 Delete (Admin)"
                                          action="#{reviewBean.deleteReviewByAdmin(review.reviewId)}"
-                                         styleClass="delete-btn">
+                                         styleClass="danger-btn">
                             <f:ajax execute="@form" render="@all" />
                         </h:commandButton>
                     </h:form>
                 </div>
             </ui:repeat>
 
-            <!-- חזרה לעמוד הסרט -->
-            <div style="text-align: center; margin-top: 20px;">
+            <!-- 🔙 Back Button -->
+            <div class="button-container">
                 <h:form>
-                    <h:commandButton value="← Back to Movie"
+                    <h:commandButton value="Back to Movie Details"
                                      action="#{pageController.setPage('movieDetails')}"
+                                     immediate="true"
                                      styleClass="secondary-btn" />
                 </h:form>
             </div>
 
         </div>
     </h:panelGroup>
-
 </ui:composition>

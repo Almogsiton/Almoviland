@@ -2,7 +2,8 @@ package Bean;
 
 import Modules.Review;
 import DAO.ReviewDAO;
-import jakarta.enterprise.context.RequestScoped;
+import DAO.UserDAO;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -12,68 +13,81 @@ import java.util.UUID;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
+import java.util.Map;
+import Utils.PageController;
+import Utils.MathUtils;
+import config.AppConfig;
 
 /**
- * Managed Bean for handling user reviews in the JSF interface.
+ * ReviewBean is a JSF managed bean that handles user review operations within
+ * the application. It allows users to submit, view, and delete reviews for
+ * movies, and allows admins to manage reviews. The bean manages UI interactions
+ * such as displaying average ratings, star visuals, and error messages.
  */
 @Named("reviewBean")
-@RequestScoped
+@SessionScoped
 public class ReviewBean implements Serializable {
 
-    private String userId;
-    private String movieId;
-    private String comment;
-    private int rating;
-
+    private String userId; // ID of the user submitting or managing the review
+    private String movieId; // ID of the movie being reviewed
+    private String comment; // The review comment text
+    private int rating; // The numeric rating given by the user (e.g., 1–5)
+    private List<Review> reviewsForMovie = new ArrayList<>(); // List of all reviews associated with the selected movie
     @Inject
-    private UserBean userBean;
-
+    private UserBean userBean; // Injected reference to the logged-in user context
     @Inject
-    private MovieBean movieBean;
+    private MovieBean movieBean; // Injected reference to the movie context (e.g., selected movie)
 
     /**
-     * Submits a new review based on the input fields.
+     * Handles the submission of a new movie review. Validates input fields,
+     * prevents duplicate reviews, and updates the movie list if successful.
      *
-     * @return navigation outcome or null to stay on the same page
+     * @return null to remain on the same page after processing
      */
     public String submitReview() {
+        FacesContext context = FacesContext.getCurrentInstance();
         if (userBean == null || userBean.getLoggedInUser() == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "You must be logged in to review."));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Login Required",
+                            "You must be logged in to submit a review."));
             return null;
         }
-
         userId = userBean.getLoggedInUser().getUserId();
         movieId = movieBean.getSelectedMovie().getMovieId();
         System.out.println("📥 Submitting review: userId=" + userId + ", movieId=" + movieId + ", rating=" + rating + ", comment=" + comment);
-        if (comment == null || comment.trim().isEmpty() || rating == 0) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Rating and comment are required."));
+        if (comment == null || comment.trim().isEmpty() || rating == AppConfig.getInvalidRating()) {
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Missing Fields",
+                            "Please provide both a rating and a comment before submitting."));
             return null;
         }
-
         if (ReviewDAO.hasUserReviewed(userId, movieId)) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "You already reviewed this movie."));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Review Already Exists",
+                            "You have already submitted a review for this movie. Only one review is allowed."));
             return null;
         }
-
         String reviewId = UUID.randomUUID().toString();
         Timestamp now = new Timestamp(System.currentTimeMillis());
         Review review = new Review(reviewId, userId, movieId, comment, rating, now);
         boolean success = ReviewDAO.addReview(review);
-
         if (success) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Review submitted successfully!"));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Review Submitted",
+                            "Thank you! Your review was submitted successfully."));
             comment = "";
             rating = 0;
-            this.movieId = movieId;
+            movieBean.loadMovies();
         } else {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to submit review."));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Submission Failed",
+                            "An error occurred while submitting your review. Please try again."));
         }
-
         return null;
     }
 
@@ -83,143 +97,160 @@ public class ReviewBean implements Serializable {
      * @return list of Review objects
      */
     public List<Review> getReviewsForMovie() {
-    if (movieId != null) {
-        System.out.println("📋 Loading reviews for movieId=" + movieId); // הדפסה נוספת כדי לבדוק את ה־movieId
-        return ReviewDAO.getReviewsByMovie(movieId);
+        return reviewsForMovie;
     }
-    System.out.println("❌ movieId is null. No reviews to load.");
-    return null;
-}
-
 
     /**
-     * Retrieves the average rating for the selected movie.
+     * Retrieves the average rating for the currently selected movie.
      *
-     * @return the average rating as a double
+     * @return the average rating value, or default value if no movie is
+     * selected
      */
     public double getAverageRatingForMovie() {
         if (movieId != null) {
             return ReviewDAO.getAverageRating(movieId);
         }
-        return 0.0;
+        return AppConfig.getDefaultAverageRating();
     }
 
-    // Getters and Setters
-    /**
-     * Gets the user ID.
-     *
-     * @return the user ID
-     */
+    public double getAverageRatingForMovie(String movieId) {
+        if (movieId != null) {
+            return ReviewDAO.getAverageRating(movieId);
+        }
+        return AppConfig.getDefaultAverageRating();
+    }
+
+    // Getters and Setters   
     public String getUserId() {
         return userId;
     }
 
-    /**
-     * Sets the user ID.
-     *
-     * @param userId the user ID to set
-     */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    /**
-     * Gets the movie ID.
-     *
-     * @return the movie ID
-     */
     public String getMovieId() {
         return movieId;
     }
 
-    /**
-     * Sets the movie ID.
-     *
-     * @param movieId the movie ID to set
-     */
     public void setMovieId(String movieId) {
         this.movieId = movieId;
+        loadReviewsForMovie();
     }
 
-    /**
-     * Gets the comment text.
-     *
-     * @return the comment text
-     */
     public String getComment() {
         return comment;
     }
 
-    /**
-     * Sets the comment text.
-     *
-     * @param comment the comment text to set
-     */
     public void setComment(String comment) {
         this.comment = comment;
     }
 
-    /**
-     * Gets the rating value.
-     *
-     * @return the rating value
-     */
     public int getRating() {
         return rating;
     }
 
-    /**
-     * Sets the rating value.
-     *
-     * @param rating the rating value to set (1–5)
-     */
     public void setRating(int rating) {
         this.rating = rating;
     }
 
-    public List<Boolean> getStarList(double rating) {
-        int fullStars = (int) Math.floor(rating);
-        List<Boolean> stars = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            stars.add(i < fullStars); // true = full, false = empty
-        }
-        return stars;
+    public String getUserNameById(String userId) {
+        return UserDAO.getUserNameById(userId);
     }
 
-    public void deleteMyReview() {
-        String userId = userBean.getLoggedInUser().getUserId();
-        String movieId = movieBean.getSelectedMovie().getMovieId();
+    /**
+     * Converts a numeric rating into a list of booleans representing full
+     * stars.
+     *
+     * @param rating the rating value
+     * @return list of 5 boolean values, true for full star, false for empty
+     */
+    public List<Boolean> getStarList(double rating) {
+        return MathUtils.getStarBooleans(rating, AppConfig.getMaxStars());
+    }
 
-        System.out.println("🗑 Deleting own review: userId=" + userId + ", movieId=" + movieId);
-
-        boolean success = ReviewDAO.deleteReview(userId, movieId);
-
+    /**
+     * Deletes a review by its ID, only if the logged-in user is an admin.
+     * Reloads the movie and its reviews if the deletion succeeds.
+     *
+     * @param reviewId the ID of the review to delete
+     */
+    public void deleteReviewByAdmin(String reviewId) {
+        System.out.println("Attempting to delete review...");
+        if (!"ADMIN".equals(userBean.getLoggedInUser().getRole())) {
+            System.out.println("️ [deleteReviewByAdmin] User is not admin. Aborting.");
+            return;
+        }
+        System.out.println(" [deleteReviewByAdmin] Called for reviewId=" + reviewId);
+        boolean success = ReviewDAO.deleteReviewById(reviewId);
         FacesContext context = FacesContext.getCurrentInstance();
         if (success) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Deleted", "Your review has been deleted."));
+            System.out.println(" [deleteReviewByAdmin] Review deleted.");
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Deleted", "Review deleted successfully."));
+            this.movieId = movieBean.getSelectedMovie().getMovieId();
+            loadReviewsForMovie();
+            movieBean.loadMovies();
         } else {
+            System.out.println(" [deleteReviewByAdmin] Failed to delete review.");
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete review."));
         }
-
-        this.movieId = movieId;
+        this.movieId = movieBean.getSelectedMovie().getMovieId();
     }
 
-    public void deleteReviewByAdmin(String reviewId) {
-        FacesContext context = FacesContext.getCurrentInstance();
-
-        if ("ADMIN".equals(userBean.getLoggedInUser().getRole())) {
-            System.out.println("🛠 Admin deleting review: reviewId=" + reviewId);
-
-            boolean success = ReviewDAO.deleteReviewById(reviewId);
-
-            if (success) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Deleted", "Review deleted successfully."));
-            } else {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete review."));
-            }
-
-            this.movieId = movieBean.getSelectedMovie().getMovieId(); // refresh average
+    /**
+     * Loads all reviews for the currently selected movie into the local list.
+     * If no movie is selected, the list is cleared.
+     */
+    public void loadReviewsForMovie() {
+        if (movieId != null) {
+            reviewsForMovie = ReviewDAO.getReviewsByMovie(movieId);
+        } else {
+            reviewsForMovie.clear();
         }
     }
 
+    /**
+     * Deletes a review by its ID if the user is logged in. Displays a success
+     * or error message and reloads the review list if needed.
+     *
+     * @param reviewId the ID of the review to delete
+     */
+    public void deleteReviewById(String reviewId) {
+        System.out.println(" Attempting to delete review by ID...");
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (userBean.getLoggedInUser() == null) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "You must be logged in."));
+            return;
+        }
+        boolean success = ReviewDAO.deleteReviewById(reviewId);
+        if (success) {
+            System.out.println(" Review deleted.");
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Deleted", "Review deleted successfully."));
+            loadReviewsForMovie();
+        } else {
+            System.out.println(" Failed to delete review.");
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete review."));
+        }
+    }
+
+    /**
+     * Loads reviews for a movie based on the "movieId" request parameter. If
+     * found, sets the movie ID, loads its reviews, and navigates to the reviews
+     * page.
+     */
+    public void loadSelectedMovieReviews() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+        String movieIdParam = params.get("movieId");
+        if (movieIdParam != null && !movieIdParam.isEmpty()) {
+            this.movieId = movieIdParam;
+            System.out.println(" Loading reviews for movieId = " + movieId);
+            loadReviewsForMovie();
+            context.getApplication()
+                    .evaluateExpressionGet(context, "#{pageController}", PageController.class)
+                    .setPage("viewReviews");
+        } else {
+            System.out.println(" No movieId parameter found to load reviews.");
+        }
+    }
 }

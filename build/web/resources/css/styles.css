@@ -1,291 +1,286 @@
-body {
-    background: 
-         #DFF2EB ;
-    
-}
 
-<!-- header design -->
-.header{
-    display: flex;/*כל האלמנטים מסתדרים בשורה אחת*/
-    align-items: center;/*כל מה שבתוכו ישאר באמצע ולא יצמד למעלה או למטה*/
-    justify-content: space-around;/*מפזר את כל האלמנטים עם מרווחים שווים*/
-}
+/* General (shared across all pages) */
+body { background: #DFF2EB; } /* Global page background, applied in all XHTML via <h:body> */
 
-.nav-links {
-       display: flex;
-       justify-content: space-around; 
-       align-items: center;
-       gap: 20px; 
-       padding: 20px 0; 
-   }
-   .nav-link {
-       text-decoration: none; 
-       color: #333; 
-       font-weight: bold; 
-       font-size: 16px; 
-       transition: color 0.3s;
-   }
-   .nav-link:hover {
-       color: #007BFF;
-   }
-   .nav-icon {
-       margin-right: 8px;
-   }
+.header { display: flex; align-items: center; justify-content: space-around; } /* Top navigation header layout (used in header.xhtml) */
 
-.success-message {
-    color: green;
-    font-weight: bold;
-    background-color: #e6ffe6;
-    border: 1px solid green;
-    padding: 5px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
+.success-message { color: green; font-weight: bold; background-color: #e6ffe6; border: 1px solid green;
+                  padding: 5px; margin-bottom: 10px; border-radius: 5px; } /* Styles for success messages (e.g., after successful form submission) */
 
-/* עיצוב הודעות שגיאה */
-.error-message {
-    color: red;
-    font-weight: bold;
-    background-color: #ffe6e6;
-    border: 1px solid red;
-    padding: 5px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.button-container {
-    margin-top: 10px;
-    text-align: center;
-}
-
-.button-container h\\:commandButton {
-    margin: 5px;
-}
+.button-container { margin-top: 20px; text-align: center; display: flex; gap: 15px;
+                   justify-content: flex-start; } /* Centers and spaces groups of buttons, with flexbox layout, used in addReview.xhtml */
+.button-container h\:commandButton { margin: 5px; } /* Adds spacing between JSF command buttons inside button groups */
 
 
-.category-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 30px 0 15px;
-}
+.error-message { color: red; font-weight: bold; background-color: #ffe6e6; border: 1px solid red; 
+                padding: 5px; margin-bottom: 10px; border-radius: 5px; } /* Styles error messages (e.g., invalid input or failed actions) */
 
-.category-title {
-    font-size: 1.6em;
-    color: #222;
-    text-align: center;
-    flex-grow: 1;
-}
+.warning-message { color: #856404; font-weight: bold; background-color: #fff3cd; border: 1px solid #ffeeba;
+                  padding: 10px 15px; margin-bottom: 10px; border-radius: 6px; } /* Styles warning messages (e.g., caution or non-critical notices) */
 
-.arrow-btn {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    color: #444;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
+.fatal-message { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px 15px; margin-bottom: 10px;
+                border-radius: 6px; } /* Styles fatal error messages with a red background and bold border */
 
-.arrow-btn:hover {
-    color: #e50914; /* Netflix red */
-}
-
-.movie-content {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    flex: 1;
-}
-
-.poster {
-    width: 150px;
-    height: auto;
-    border-radius: 8px;
-}
-
-.movie-details {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.page-title { display: flex; justify-content: center; align-items: center; font-size: 26px; margin-bottom:
+                 30px; gap: 10px; } /* Styles centered page titles with spacing and modern layout */
+.page-title::before { content: "📝"; font-size: 26px; } /* Adds a decorative pencil emoji before each page title */
 
 
+.form-grid { width: 100%; max-width: 450px; margin: 0 0 20px 0; display: flex; flex-direction: column;
+            gap: 8px; align-items: flex-start; } /* Styles form layout as a vertical grid with spacing and alignment */
+.form-grid input,
+.form-grid select,
+.form-grid textarea { width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;
+                     box-sizing: border-box; } /* Styles form inputs, selects, and textareas with full width, padding, and border */
+.form-grid label { font-weight: bold; } /* Makes form labels bold */
 
-/* SEARCH */
+.action-btn { background-color: #28a745; color: white; font-weight: 600; border: none; padding: 10px 20px; border-radius: 6px;
+             cursor: pointer; transition: background-color 0.3s ease, box-shadow 0.3s ease;
+             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); } /* Styles the main action button with green background, rounded corners, and box shadow */
+.action-btn:hover { background-color: #218838; } /* Changes background color on hover to a darker green */
 
-.search-form {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-}
+.secondary-btn { background-color: #6c757d; color: white; font-weight: 600; border: none; padding: 10px 20px; border-radius: 6px;
+                cursor: pointer; transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); } /* Styles the secondary button with gray background, rounded corners, and box shadow */
+.secondary-btn:hover { background-color: #5a6268; } /* Changes background color on hover to a darker gray */
 
-.search-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.8);
+                display: flex; justify-content: center;
+                align-items: center; z-index: 1000; } /* Creates a dark, full-screen overlay with center alignment for the modal */
 
-.search-input {
-    flex-grow: 1;
-    padding: 10px;
-    font-size: 16px;
-}
+.modal-dialog { background-color: #1c1c1c; padding: 25px; border-radius: 12px; max-width: 800px; width: 90%; color: white; box-shadow:
+                   0 0 20px rgba(255, 255, 255, 0.1); } /* Styles the modal with a dark background, rounded corners, padding, and a subtle shadow */
 
-.search-button {
-    padding: 10px 20px;
-    background-color: #e50914;
-    color: white;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
+.movie-dialog-content { display: flex; gap: 30px;
+                       align-items: flex-start; } /* Styles the modal content with flexible layout, a gap, and aligned to the top */
 
+.poster-section { flex-shrink: 0; } /* Ensures that the movie poster doesn't shrink in the layout */
 
-/* MOVIE DETAILS*/
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+.info-section { flex-grow: 1; } /* Allows the information section to grow and take available space */
 
-.modal-dialog {
-    background-color: #1c1c1c;
-    padding: 25px;
-    border-radius: 12px;
-    max-width: 800px;
-    width: 90%;
-    color: white;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
+.movie-title { margin-top: 0; font-size: 24px; color: #e50914; } /* Styles the movie title with red color and removes the top margin */
 
-.movie-dialog-content {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-}
+.scroll-arrow { background-color: rgba(0, 0, 0, 0.6); border: none; color: white; width: 55px; height: 55px; border-radius: 50%; cursor: pointer;
+               display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.3s ease, transform 0.3s ease;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); } /* Styles the scroll arrows with a circular shape, shadow, and smooth hover effect */
+.scroll-arrow:hover { background-color: rgba(0, 0, 0, 0.85); transform: scale(1.15); } /* Increases size and darkens the background on hover */
 
-.poster-section {
-    flex-shrink: 0;
-}
+.limit-reached { color: red; font-weight: bold;
+                margin-bottom: 10px; } /* Styles message shown when user reached the borrowing limit, with bold red text and spacing */
 
-.modal-poster {
-    width: 200px;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 8px;
-}
+.modal-poster { width: 200px; height: 300px; object-fit: cover;
+               border-radius: 8px; } /* Styles the movie poster in modal with fixed size, rounded corners, and aspect fit */
 
-.info-section {
-    flex-grow: 1;
-}
+.dialog-buttons { margin-top: 20px; display: flex; gap: 15px; } /* Layout for action buttons in modal with spacing and horizontal alignment */
 
-.movie-title {
-    margin-top: 0;
-    font-size: 24px;
-    color: #e50914;
-}
+.label { font-weight: bold; margin-right: 5px; display: inline-block; color: #333; } /* Styles inline labels with bold text, spacing, and dark color */
 
-.stars {
-    font-size: 20px;
-    color: gold;
-    margin: 10px 0;
-}
+.borrow-table { width: 100%; border-collapse: collapse;
+               margin-top: 20px; } /* Styles the borrow table to span full width with collapsed borders and spacing above */
 
-.rating-number {
-    color: #ccc;
-    font-size: 14px;
-    margin-left: 8px;
-}
+.borrow-table th, .borrow-table td { border: 1px solid #ccc; padding: 10px;
+                  text-align: left; } /* Applies borders and padding to all table cells for clean layout */
 
-.dialog-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
-}
+.borrow-table th { background-color: #f4f4f4; font-weight: bold; } /* Highlights table headers with light gray background and bold text */
 
-.action-btn, .close-btn {
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+.movie-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;
+            padding: 20px; } /* Styles movie row as a responsive grid with adjustable columns and padding */
 
-.action-btn {
-    background-color: #e50914;
-    color: white;
-}
-
-.close-btn {
-    background-color: transparent;
-    border: 2px solid #ccc;
-    color: #ccc;
-}
+.poster { width: 150px; height: auto; border-radius: 8px; } /* Styles a movie poster with fixed width, responsive height, and rounded corners */
 
 
-/* movies scroller */
+/* addReview.xhtml */
+.form-input { padding: 8px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; width: 100%; } /* Styles input and textarea fields in forms */
 
-.scroll-container-wrapper {
-    position: relative;
-    margin: 0 auto;
-    padding: 0 30px;
-}
+.form-wrapper { max-width: 600px; margin: 0 auto; } /* Centers the form with a maximum width of 600px */
 
-.scroll-container {
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-}
 
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
+/* adminDashboard.xhtml */
+.admin-buttons { display: flex; flex-direction: column; gap: 15px;
+                align-items: center; margin-top: 20px; } /* Aligns admin buttons vertically with spacing between and centers them */
+.admin-buttons h\:commandButton { margin: 10px; background-color: #007bff; color: white; font-size: 16px;
+                                 font-weight: 600; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer;
+                                 transition: background-color 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); width: 100%;
+                                 max-width: 250px; } /* Styles admin buttons with modern look, rounded corners, and box shadow */
+.admin-buttons h\:commandButton:hover { background-color: #0056b3;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } /* Changes background and adds shadow on hover */
 
-.movie-row {
-    display: flex;
-    gap: 10px;
-    padding: 20px 0;
-}
 
-.movie-wrapper {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-}
+/* adminLossRequests.xhtml */
+.loss-report-table { width: 100%; border-collapse: collapse;
+                    margin-top: 20px; } /* Styles the table for displaying loss reports with full width, no spacing between borders, and top margin */
+.loss-report-table th, .loss-report-table td { border: 1px solid #ccc; padding: 10px;
+                       text-align: left; } /* Adds border, padding, and left alignment to table cells */
+.loss-report-table th { background-color: #f4f4f4; font-weight: bold; } /* Styles table header with a light background and bold text */
 
-.scroll-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.4);
-    border: none;
-    color: white;
-    font-size: 30px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+/* borrowConfirmation.xhtml */
 
-.scroll-arrow.left {
-    left: 0;
-}
 
-.scroll-arrow.right {
-    right: 0;
-}
+/* categoriesManagement.xhtml *//* editCategory.xhtml */
+/* Styles image thumbnails with a fixed size of 80x80px, ensures image covers the area without stretching, and adds rounded corners */
+.thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; } 
 
-.scroll-arrow:hover {
-    background-color: rgba(0, 0, 0, 0.7);
-}
+/* contact.xhtml */
+.admin-contact-table { width: 100%; border-collapse: collapse;
+                      margin-top: 20px; } /* Styles the admin contact table with full width, no spacing between borders, and top margin */
+.admin-contact-table td, .admin-contact-table th { border: 1px solid #ddd; padding: 8px; } /* Adds border and padding to table cells */
+.admin-contact-table th { background-color: #f2f2f2; text-align: left; } /* Styles table headers with a light gray background and left-aligned text */
+
+
+/* editMovie.xhtml */
+.manage-movie-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 10px;
+                         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); } /* Centers and styles the movie management box with padding and shadow */
+
+.manage-movie-title { text-align: center; font-size: 28px; margin-bottom: 25px;
+                     color: #222; } /* Styles the page title with center alignment and spacing */
+
+.movie-info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px;
+                  margin-bottom: 20px; align-items: center; } /* Arranges labels and inputs in a responsive two-column grid */
+
+.movie-poster { grid-column: span 2; display: flex; justify-content: center; margin-bottom: 15px; } /* Centers the movie poster within the grid layout */
+
+.movie-poster img { width: 120px; height: auto; border-radius: 8px; } /* Sets fixed width and rounded corners for the poster image */
+
+.button-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+               margin-top: 20px; } /* Aligns action buttons in a responsive, evenly spaced row */
+
+/* header.xhtml */
+.nav-links { display: flex; justify-content: space-around; align-items: center; gap: 20px; padding: 20px 0; }
+.nav-link { text-decoration: none; color: #333; font-weight: bold; font-size: 16px; transition: color 0.3s; } /* Individual navigation link styling */
+.nav-link:hover { color: #007BFF; } /* Hover effect for nav links */
+.nav-icon { margin-right: 8px; } /* Margin for icons inside nav links */
+
+
+/* home.xhtml */
+.category-header { display: flex; align-items: center; justify-content: center; gap: 10px; text-align: center; margin-bottom: 10px;
+} /* Styles category header with flexbox for alignment and text centering */
+.category-header img { height: 50px; vertical-align: middle; } /* Styles the category image with fixed height and vertical alignment */
+.category-title-inline { display: inline-block; margin-left: 10px;
+                        vertical-align: middle; } /* Styles category title to be inline with left margin and vertical alignment */
+
+.movie-wrapper { flex: 0 0 auto; scroll-snap-align: start; padding-left: 30px; } /* Styles movie wrapper with scroll-snap and left padding */
+
+.nav-arrow-left, .nav-arrow-right { display: flex; align-items: center; justify-content: center; } /* Centers the left and right navigation arrows vertically and horizontally */
+
+/* index.xhtml */
+
+/* login.xhtml */
+
+/* movieCard.xhtml */
+.movie-card { position: relative; width: 200px; height: 300px; border-radius: 12px; overflow: hidden; background-color: #111;
+             box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease-in-out;
+             cursor: pointer; } /* Styles the movie card container with dark theme, rounded corners, and hover effect */
+
+.movie-card:hover { transform: scale(1.05); } /* Slightly enlarges the card on hover */
+
+.movie-card .poster { width: 100%; height: 100%;
+         object-fit: cover; } /* Makes the poster fill the card while preserving aspect */
+
+.card-title { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.3),
+                 transparent); padding: 8px; color: white; font-weight: bold; text-align: center;
+             z-index: 2; } /* Displays the movie title with gradient overlay and centered white text */
+
+.overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: rgba(0, 0, 0, 0.3); color: white; padding: 12px;
+          transform: translateY(100%); transition: transform 0.3s ease-in-out; font-size: 14px; display: flex; flex-direction: column;
+          justify-content: flex-end; z-index: 3; } /* Hidden overlay panel with additional info, slides up on hover */
+
+.movie-card:hover .overlay { transform: translateY(0); } /* Shows the overlay when hovering */
+
+.icon-actions { display: flex; justify-content: center; gap: 15px; margin-top: 10px; } /* Layout for action icons below overlay info */
+
+.icon-btn { background: none; border: none; cursor: pointer; color: white; font-size: 1.5em; } /* Styles icon buttons inside the overlay */
+
+.icon-btn:hover { color: #f44; } /* Highlights icon on hover with red tint */
+
+.remaining-borrow { font-size: 13px; color: #e50914; margin-top: 10px;font-weight: bold; } /* Styles remaining borrow text with subtle color and spacing */
+
+/* movieDetails.xhtml */
+.remaining-borrow-info { font-size: 13px; color: #555; margin-bottom: 10px; } /* Displays remaining borrow limit in small, subtle text */
+
+.stars { font-size: 20px; color: gold; margin: 10px 0; } /* Styles star rating display with gold color and spacing */
+
+.close-btn { background-color: #dc3545; color: white; font-weight: 600; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); } /* Red button for closing modals with white text and hover effect */
+
+.close-btn:hover { background-color: #c82333; } /* Darkens close button background on hover */
+
+/* moviesManagement.xhtml */
+.edit-poster { width: 100px; height: 150px; object-fit: cover; border-radius: 6px; display: block;
+              margin-bottom: 15px; } /* Styles small movie poster in table with fixed size, rounded corners, and spacing */
+
+
+
+/* profile.xhtml */
+.loss-pending-message { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 15px; margin: 10px 0; font-size: 14px; color: #856404;
+                       border-radius: 6px; } /* Highlights a pending loss report message with yellow background and warning styling */
+
+
+/* register.xhtml */
+.subscription-info { display: flex; align-items: center; background-color: #e9f7ef; border: 1px solid #c3e6cb; padding: 12px 16px; border-radius: 6px;
+                    color: #155724; font-size: 15px; gap: 10px; margin-bottom: 20px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    } /* Styles the subscription info box with green-themed background, border, and spacing for icon and text */
+
+.subscription-info i { font-size: 20px; color: #28a745; } /* Styles the icon inside the subscription info box with a green color and larger size */
+
+                    
+/* reportLoss.xhtml */
+.loss-payment-note { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 18px; margin-bottom: 20px; color: #856404;
+                    border-radius: 6px; font-size: 15px; } /* Styles a warning note for loss penalty with yellow background and emphasis */
+
+
+/* search.xhtml */
+.search-form { padding: 20px; max-width: 800px; margin: 0 auto; } /* Styles the search form container with centered layout and padding */
+
+.search-bar { display: flex; gap: 10px; margin-bottom: 25px; } /* Lays out the search input and button horizontally with spacing */
+
+.search-input { flex-grow: 1; padding: 10px; font-size: 16px; } /* Expands the search input to fill available space with readable text size */
+
+.empty-results { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 20px; margin: 20px 0; font-size: 15px; color: #856404;
+                border-radius: 6px; } /* Highlights 'no results' message with yellow background and styled border */
+
+.pagination-controls { display: flex; justify-content: center; align-items: center; gap: 20px;
+                      margin-top: 20px; } /* Styles the pagination area with centered layout and spacing between navigation arrows */
+
+
+/* userBorrowingHistory.xhtml */
+/* usersManagement.xhtml */
+.user-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 15px;
+             text-align: left; } /* Styles the users table with full width, readable font size, and left-aligned content */
+.user-table th, .user-table td { padding: 10px;
+                border-bottom: 1px solid #ccc; } /* Adds padding and bottom border to all table cells for clean separation */
+.user-table th { background-color: #f5f5f5; font-weight: bold; } /* Highlights table headers with light background and bold text */
+
+/* viewReviews.xhtml */
+.page-container { max-width: 900px; margin: 0 auto; padding: 30px 20px; } /* Centers page content with padding and max width for readability */
+
+.avg-rating-text { text-align: center; font-size: 18px; color: #111;
+                  margin-bottom: 25px; } /* Displays the average rating with centered styling and spacing below */
+
+.rating-star { color: gold; font-size: 20px; } /* Styles stars used in the rating system with gold color and large size */
+
+.review-box { border: 1px solid #ccc; background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 800px;
+             box-shadow: 0 2px 8px rgba(0,0,0,0.05); } /* Container for individual reviews with white background, padding, and soft shadow */
+
+.review-box p { margin: 8px 0; font-size: 15px; color: #333; } /* Paragraphs inside review boxes with spacing and readable text */
+
+.review-box small { color: #666; font-size: 13px; } /* Small metadata text inside review boxes, like dates */
+
+.review-box b { color: #000; } /* Bold text inside review boxes (e.g., labels like User, Rating) */
+
+.danger-btn { background-color: #dc3545; color: white; font-weight: 600; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;
+             transition: background-color 0.3s ease; } /* Red button for destructive actions like delete, with bold text and rounded corners */
+
+.danger-btn:hover { background-color: #c82333; } /* Darkens the danger button color on hover for visual feedback */
+
+/* scripts.js */
+.scroll-container-wrapper { position: relative; margin: 0 auto;
+                           padding: 0 30px; } /* Wraps horizontal scroll sections with spacing and relative positioning */
+
+.scroll-container { overflow-x: scroll; overflow-y: hidden; scroll-snap-type: x mandatory;
+                   -webkit-overflow-scrolling: touch; } /* Enables smooth horizontal scroll snapping for movie rows */
+
+.scroll-container::-webkit-scrollbar { display: none; } /* Hides the horizontal scrollbar in WebKit browsers */
+
+

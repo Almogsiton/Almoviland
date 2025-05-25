@@ -6,24 +6,26 @@ import java.util.Date;
 /**
  * Represents a borrowing transaction in the system.
  *
- * This class stores information about a user's movie borrowing,
- * including the user ID, movie ID, borrowing date, and return date.
+ * This class stores information about a user's movie borrowing, including the
+ * user ID, movie ID, borrowing date, and return date.
  */
 public class Borrowing implements Serializable {
+
     private String borrowingId;
     private String userId;
     private String movieId;
     private Date borrowDate;
     private Date returnDate;
+    private String status;
 
     /**
      * Constructs a new Borrowing object with the specified details.
      *
-     * @param borrowingId  the unique ID of the borrowing
-     * @param userId       the ID of the user who borrowed the movie
-     * @param movieId      the ID of the borrowed movie
-     * @param borrowDate   the date the movie was borrowed
-     * @param returnDate   the date the movie was returned
+     * @param borrowingId the unique ID of the borrowing
+     * @param userId the ID of the user who borrowed the movie
+     * @param movieId the ID of the borrowed movie
+     * @param borrowDate the date the movie was borrowed
+     * @param returnDate the date the movie was returned
      */
     public Borrowing(String borrowingId, String userId, String movieId, Date borrowDate, Date returnDate) {
         this.borrowingId = borrowingId;
@@ -32,11 +34,13 @@ public class Borrowing implements Serializable {
         this.borrowDate = borrowDate;
         this.returnDate = returnDate;
     }
-    
-    public Borrowing() {
-    // קונסטרקטור ריק נדרש לשימוש פנימי/DAO
-}
 
+    /**
+     * Constructs an empty Borrowing object. Useful for frameworks or
+     * serialization.
+     */
+    public Borrowing() {
+    }
 
     /**
      * @return the borrowing ID
@@ -116,5 +120,21 @@ public class Borrowing implements Serializable {
      */
     public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
+    }
+
+    /**
+     * @return the borrowing status (e.g., "ACTIVE", "RETURNED", "LOST")
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the borrowing status.
+     *
+     * @param status the status to set (e.g., "ACTIVE", "RETURNED", "LOST")
+     */
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

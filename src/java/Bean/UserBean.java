@@ -5,6 +5,7 @@ import Modules.Borrowing;
 import Modules.User;
 import DAO.UserDAO;
 import DAO.BorrowingDAO;
+import Utils.MathUtils;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -14,39 +15,37 @@ import java.util.List;
 import jakarta.faces.context.ExternalContext;
 import jakarta.inject.Named;
 import config.AppConfig;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.io.IOException;
 
 /**
- * Managed Bean for handling user-related operations such as registration,
- * login, logout, user role management, and viewing borrowing history. This bean
- * is session scoped, meaning it is active for the duration of a user's session.
+ * Session-scoped managed bean that manages the state and actions of the
+ * currently logged-in user in the system. Handles registration, login/logout,
+ * role assignment, user management (for admins), and borrowing history.
  */
 @Named
 @SessionScoped
 public class UserBean implements Serializable {
 
     @Inject
-    private PageController pageController;
-
-    private List<User> users;
-    private User newUser = new User();
-    private User selectedUser;
-    private String loginEmail;
-    private String loginPassword;
-    private User loggedInUser;
-    private List<Borrowing> borrowingHistory;
-    private String confirmPassword;
-    private String creditCardNumber;
-    private String expiryDate;
-    private String cvc;
-    private String expiryMonth;
-    private String expiryYear;
-    private int limitBorrowMax;
+    private PageController pageController; // Controller for JSF page navigation
+    private List<User> users; // List of all users in the system (admin view)
+    private User newUser = new User(); // New user object used during registration
+    private User selectedUser; // User selected by admin for management actions
+    private String loginEmail; // Email entered during login
+    private String loginPassword; // Password entered during login
+    private User loggedInUser; // Currently authenticated user (stored in session)
+    private List<Borrowing> borrowingHistory; // List of past borrowings for the logged-in user
+    private String confirmPassword; // Password confirmation field for registration
+    private String creditCardNumber; // Temporary credit card number entered at registration
+    private String expiryDate; // Combined credit card expiry date string
+    private String expiryMonth; // Credit card expiry month 
+    private String expiryYear; // Credit card expiry year 
+    private String cvc; // Credit card security code
+    private int limitBorrowMax; // Maximum number of borrowings allowed for this user
 
     /**
-     * Ensures the user list is loaded from the database.
+     * Loads the user list from the database if it is not already loaded.
      */
     public void ensureUsersLoaded() {
         if (users == null || users.isEmpty()) {
@@ -55,22 +54,25 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Constructor - creates the first admin if no users exist.
+     * Constructs the UserBean and ensures an admin user exists in the system.
+     * Invokes the DAO to create the first admin if no users are found.
      */
     public UserBean() {
         UserDAO.createAdminIfNotExists();
     }
 
     /**
-     * Loads all users from the database.
+     * Loads all users from the database into the local list. Intended for admin
+     * use to manage the list of registered users.
      */
     public void loadUsers() {
         users = UserDAO.getAllUsers();
-        System.out.println("🔄 Users Loaded: " + (users != null ? users.size() : 0));
+        System.out.println("Users Loaded: " + (users != null ? users.size() : 0));
     }
 
     /**
-     * @return The list of all users.
+     * @return the list of all users, loaded from the database if not already
+     * available
      */
     public List<User> getUsers() {
         ensureUsersLoaded();
@@ -234,16 +236,15 @@ public class UserBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext externalContext = context.getExternalContext();
         User user = UserDAO.getUserByEmail(loginEmail);
-
         if (user != null) {
             String enteredPasswordHash = UserDAO.hashPassword(loginPassword);
-            System.out.println("🔍 Entered Hash: " + enteredPasswordHash);
-            System.out.println("🔍 Stored Hash: " + user.getPassword());
-
+            System.out.println("Entered Hash: " + enteredPasswordHash);
+            System.out.println("Stored Hash: " + user.getPassword());
             if (user.getPassword().equals(enteredPasswordHash)) {
                 externalContext.getSessionMap().put("loggedUser", user);
                 loggedInUser = user;
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome!", "Login successful."));
+                context.getExternalContext().getFlash().setKeepMessages(true);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome! Login successful.", ""));
                 pageController.setPage(AppConfig.getDefaultPage());
             } else {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error:", "Invalid email or password."));
@@ -273,7 +274,6 @@ public class UserBean implements Serializable {
     public void toggleUserRole(String userId) {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean success = UserDAO.changeUserRole(userId);
-
         if (success) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success!", "User role updated successfully!"));
             loadUsers();
@@ -290,7 +290,6 @@ public class UserBean implements Serializable {
     public void deleteUser(String userId) {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean success = UserDAO.deleteUser(userId);
-
         if (success) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success!", "User deleted successfully!"));
             loadUsers();
@@ -310,50 +309,54 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Registers a new user. Validates password confirmation and checks for
-     * email uniqueness.
+     * Registers a new user. Validates password confirmation, ensures the email
+     * is unique, and performs basic credit card validation (number, CVC,
+     * expiry).
      */
     public void registerUser() {
         FacesContext context = FacesContext.getCurrentInstance();
-
-        // 🔐 אימות סיסמה חוזרת
+        // Validate password confirmation
         if (!newUser.getPassword().equals(confirmPassword)) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Passwords do not match!"));
             return;
         }
-
-        // 📧 בדיקת כפילות אימייל
+        // ✅ Validate password strength
+        if (!MathUtils.isStrongPassword(newUser.getPassword())) {
+            context.addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "Password must contain at least one lowercase letter, one uppercase letter, and one number."
+            ));
+            return;
+        }
+        // Check if email already exists
         if (UserDAO.getUserByEmail(newUser.getEmail()) != null) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Email is already in use!"));
             return;
         }
-
-        // 💳 בדיקת כרטיס אשראי: מספר, CVC, תוקף
-        if (creditCardNumber == null || !creditCardNumber.matches("\\d{16}")) {
+        // Validate credit card number
+        if (creditCardNumber == null || !creditCardNumber.matches("\\d{" + AppConfig.getCreditCardLength() + "}")) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Credit card number must be 16 digits."));
             return;
         }
-
-        if (cvc == null || !cvc.matches("\\d{3}")) {
+        // Validate CVC
+        if (cvc == null || !cvc.matches("\\d{" + AppConfig.getCvcLength() + "}")) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "CVC must be 3 digits."));
             return;
         }
-
+        // Validate expiry date format and range
         if (expiryMonth == null || expiryYear == null
-                || !expiryMonth.matches("\\d{1,2}") || !expiryYear.matches("\\d{4}")) {
+                || !expiryMonth.matches("\\d{1,2}") || !expiryYear.matches("\\d{4}")) {// validate format: MM and YYYY
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid expiry date."));
             return;
         }
-
         try {
             int month = Integer.parseInt(expiryMonth);
             int year = Integer.parseInt(expiryYear);
-
-            if (month < 1 || month > 12) {
+            if (month < AppConfig.getMinMonth() || month > AppConfig.getMaxMonth()) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid month (1-12)."));
                 return;
             }
-
             java.time.YearMonth expiry = java.time.YearMonth.of(year, month);
             java.time.YearMonth now = java.time.YearMonth.now();
             if (expiry.isBefore(now)) {
@@ -364,42 +367,50 @@ public class UserBean implements Serializable {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid expiry date format."));
             return;
         }
-
-        // 🧑 יצירת המשתמש בבסיס הנתונים (ההצפנה מתבצעת ב-DAO)
+        // Attempt to add user to database
         boolean success = UserDAO.addUser(newUser);
-
         if (success) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success!", "Registration successful!"));
-            newUser = new User();  // אתחול חדש
-            confirmPassword = "";
-            creditCardNumber = "";
-            expiryMonth = "";
-            expiryYear = "";
-            cvc = "";
-
-            pageController.setPage(AppConfig.getDefaultPage()); // מעבר לעמוד הבית
+            resetRegistrationForm();
+            pageController.setPage(AppConfig.getDefaultPage());
         } else {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Registration failed."));
         }
     }
 
+    /**
+     * Resets all registration-related input fields to their default values.
+     */
+    private void resetRegistrationForm() {
+        newUser = new User();
+        confirmPassword = "";
+        creditCardNumber = "";
+        expiryMonth = "";
+        expiryYear = "";
+        cvc = "";
+    }
+
+    /**
+     * @return a list of month options (01–12) for credit card expiry dropdown
+     */
     public List<String> getMonthOptions() {
-        List<String> months = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            months.add(String.format("%02d", i));
-        }
-        return months;
+        return MathUtils.generateMonthOptions(AppConfig.getMinMonth(), AppConfig.getMaxMonth());
     }
 
+    /**
+     * @return a list of credit card expiry year options, starting from the
+     * current year and including the next configured number of years
+     */
     public List<String> getYearOptions() {
-        List<String> years = new ArrayList<>();
-        int currentYear = LocalDate.now().getYear();
-        for (int i = 0; i <= 10; i++) {
-            years.add(String.valueOf(currentYear + i));
-        }
-        return years;
+        return MathUtils.generateYearOptions(AppConfig.getExpiryYearStartOffset(), AppConfig.getExpiryYearRange());
     }
 
+    /**
+     * Redirects to a given page if no user is currently logged in.
+     *
+     * @param pageIfNotLoggedIn the target page (without .xhtml extension) to
+     * redirect to
+     */
     public void redirectIfNotLoggedIn(String pageIfNotLoggedIn) {
         if (loggedInUser == null) {
             FacesContext context = FacesContext.getCurrentInstance();
@@ -412,4 +423,31 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * @return a list of all users with the "ADMIN" role
+     */
+    public List<User> getAdmins() {
+        loadUsers();
+        List<User> admins = new ArrayList<>();
+        for (User user : users) {
+            if (AppConfig.getAdminRole().equalsIgnoreCase(user.getRole())) {
+                admins.add(user);
+            }
+        }
+        return admins;
+    }
+
+    /**
+     * @return the monthly subscription price exposed to JSF
+     */
+    public double getMonthlySubscriptionPrice() {
+        return AppConfig.getMonthlySubscriptionPrice();
+    }
+
+    /**
+     * @return the penalty amount charged for reporting a lost movie
+     */
+    public double getLossChargeAmount() {
+        return AppConfig.getLossChargeAmount();
+    }
 }

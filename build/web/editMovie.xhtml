@@ -3,67 +3,70 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Displays detailed information about a selected movie in read-only mode.
+    2. Allows admin to handle inventory actions such as reporting lost copies and adding new ones.
+    3. Shows current image, title, categories, quantity, and available copies.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'editMovie'}">
-        <h1>Manage Movie</h1>        
-        <h:form>
-            <h:commandButton value="Back to Categories Management" action="#{pageController.setPage('moviesManagement')}">
-                <f:ajax execute="@form" render="@all"/>
-            </h:commandButton>
-        </h:form>
+        <div class="manage-movie-container">
+            <h2 class="manage-movie-title">Edit Movie</h2>        
 
+            <!-- Back Button -->
+            <h:form>
+                <h:commandButton value="Back to Categories Management" 
+                                 action="#{pageController.setPage('moviesManagement')}"
+                                 styleClass="action-btn">
+                    <f:ajax execute="@form" render="@all"/>
+                </h:commandButton>
+            </h:form>
 
-        <h:form id="manageMovieForm">
-            <h:panelGrid columns="2">
-                <h:outputLabel for="picture" value="picture:"/>
-                <h:graphicImage value="#{movieBean.getMovieImageBase64(movieBean.selectedMovie.movieId)}"
-                                width="100" height="150"
-                                style="display: block; margin-bottom: 15px;"/>
+            <!-- Movie Info Form -->
+            <h:form id="manageMovieForm">
+                <div class="movie-info-grid">
 
+                    <!-- Poster -->
+                    <div class="movie-poster">
+                        <h:graphicImage value="#{movieBean.getMovieImageBase64(movieBean.selectedMovie.movieId)}"
+                                        width="120" height="160"/>
+                    </div>
 
-                <h:outputLabel for="editTitle" value="Title:"/>
-                <h:inputText id="editTitle" value="#{movieBean.selectedMovie.title}" readonly="true"/>
+                    <h:outputLabel for="editTitle" value="Title:"/>
+                    <h:inputText id="editTitle" value="#{movieBean.selectedMovie.title}" readonly="true"/>
 
-                <h:outputLabel for="editCategory" value="Categories:"/>
-                <h:inputText id="editCategory" value="#{movieBean.selectedMovie.categoryNames}" readonly="true"/>
+                    <h:outputLabel for="editCategory" value="Categories:"/>
+                    <h:inputText id="editCategory" value="#{movieBean.selectedMovie.categoryNames}" readonly="true"/>
 
-                <h:outputLabel for="editQuantity" value="Total Copies:"/>
-                <h:inputText id="editQuantity" value="#{movieBean.selectedMovie.quantity}" readonly="true"/>
+                    <h:outputLabel for="editQuantity" value="Total Copies:"/>
+                    <h:inputText id="editQuantity" value="#{movieBean.selectedMovie.quantity}" readonly="true"/>
 
-                <h:outputLabel for="editCopiesAvailable" value="Available Copies:"/>
-                <h:inputText id="editCopiesAvailable" value="#{movieBean.selectedMovie.copiesAvailable}" readonly="true"/>
+                    <h:outputLabel for="editCopiesAvailable" value="Available Copies:"/>
+                    <h:inputText id="editCopiesAvailable" value="#{movieBean.selectedMovie.copiesAvailable}" readonly="true"/>
+                </div>
 
-            </h:panelGrid>
+                <!-- Action Buttons -->
+                <div class="button-group">
 
-            <!-- 🔹 כפתור סרט הלך לאיבוד ללקוח -->
-            <h:commandButton value="Lost by Customer"
-                             action="#{movieBean.movieLostByCustomer}"
-                             onclick="return confirm('Are you sure the customer lost this movie?');">
-                <f:ajax execute="@form" render="@all"/>
-            </h:commandButton>
+                    <h:commandButton value="Lost by Company"
+                                     action="#{movieBean.movieLostByCompany}"
+                                     styleClass="action-btn"
+                                     onclick="return confirm('Are you sure this movie is lost by the company?');">
+                        <f:ajax execute="@form" render="@all"/>
+                    </h:commandButton>
 
-            <!-- 🔹 כפתור לאיבוד עותקים על ידי החברה (עם prompt) -->
-            <h:commandButton value="Lost by Company"
-                             onclick="lostCopiesPrompt(); return false;" />
+                    <h:commandButton value="Add Copies to Inventory"
+                                     styleClass="action-btn"
+                                     onclick="addCopiesPrompt(); return false;"/>
+                </div>
 
-            <h:inputHidden id="lostCopiesInput" value="#{movieBean.lostCopiesCount}" />
-            <h:commandButton id="lostCopiesBtn"
-                             action="#{movieBean.movieLostByCompany(movieBean.lostCopiesCount)}"
-                             style="display:none">
-                <f:ajax execute="@form" render="@all" />
-            </h:commandButton>
-
-
-
-
-            <h:commandButton value="Add Copies to Inventory"
-                             onclick="addCopiesPrompt(); return false;"/>
-
-
-
-            <h:inputHidden id="addCopiesInput" value="#{movieBean.addCopiesCount}" />
-            <h:commandButton id="addCopiesBtn" action="#{movieBean.addCopiesToInventory}" style="display:none">
-                <f:ajax execute="@form" render="@all" />
-            </h:commandButton>
-        </h:form>
+                <!-- Hidden Input + Submit for Add Copies -->
+                <h:inputHidden id="addCopiesInput" value="#{movieBean.addCopiesCount}" />
+                <h:commandButton id="addCopiesBtn" action="#{movieBean.addCopiesToInventory}" style="display:none">
+                    <f:ajax execute="@form" render="@all" />
+                </h:commandButton>
+            </h:form>
+        </div>
     </h:panelGroup>
 </ui:composition>

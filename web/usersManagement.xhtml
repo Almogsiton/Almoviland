@@ -3,63 +3,80 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Displays a table of all registered users with relevant information (ID, name, email, role, registration date).
+    2. Allows the admin to change user roles, delete users, or view their borrowing history.
+    3. Provides a button to return to the admin dashboard.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'usersManagement'}">
-        <h1>Users Management</h1>
-
-        <!-- 🔹 טעינת משתמשים באופן דינמי -->
-        #{userBean.ensureUsersLoaded()}
-
-        <!-- 🔹 כפתור חזרה ללוח הבקרה -->
         <h:form>
-            <h:commandButton value="🔙 Back to Dashboard" action="#{pageController.setPage('admin')}">
+
+            <h2 class="page-title">👥 Users Management</h2>
+
+            <!-- Load users if needed -->
+            #{userBean.ensureUsersLoaded()}
+
+            <!-- Back button -->
+            <h:commandButton value="⬅️ Back to Dashboard"
+                             action="#{pageController.setPage('admin')}"
+                             styleClass="action-btn">
                 <f:ajax execute="@form" render="@all"/>
             </h:commandButton>
-        </h:form>
 
-        <!-- 🔹 טבלת משתמשים -->
-        <h:form id="userTableForm">
-            <h:dataTable value="#{userBean.users}" var="user" border="1">
+            <br/><br/>
+
+            <!-- Users table -->
+            <h:dataTable value="#{userBean.users}" var="user" styleClass="user-table">
                 <h:column>
                     <f:facet name="header">User ID</f:facet>
-                    #{user.userId}
+                        #{user.userId}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Name</f:facet>
-                    #{user.name}
+                        #{user.name}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Email</f:facet>
-                    #{user.email}
+                        #{user.email}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Role</f:facet>
-                    #{user.role}
+                        #{user.role}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Registration Date</f:facet>
-                    #{user.dateRegistration}
+                    <h:outputText value="#{user.dateRegistration}">
+                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                    </h:outputText>
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Actions</f:facet>
 
-                    <!-- 🔹 כפתור שינוי תפקיד -->
+                    <!-- Change Role -->
                     <h:commandButton value="Change Role"
+                                     rendered="#{user.role eq 'USER'}"
                                      action="#{userBean.toggleUserRole(user.userId)}"
+                                     styleClass="action-btn"
                                      onclick="return confirm('Are you sure you want to change this user\'s role?');">
                         <f:ajax execute="@this" render="@all"/>
                     </h:commandButton>
 
-                    <!-- 🔹 כפתור מחיקת משתמש -->
+                    <!-- Delete User -->
                     <h:commandButton value="Delete"
+                                     rendered="#{user.role eq 'USER'}"
                                      action="#{userBean.deleteUser(user.userId)}"
+                                     styleClass="action-btn"
                                      onclick="return confirm('Are you sure you want to delete this user?');">
                         <f:ajax execute="@this" render="@all"/>
                     </h:commandButton>
 
-                    <!-- 🔹 כפתור הצגת היסטוריית השאלות -->
-                    <h:commandButton value="View Borrowing History"
-                                     action="#{userBean.viewUserBorrowingHistory(user.userId)}">
+                    <!-- View Borrowing History -->
+                    <h:commandButton value="History"
+                                     action="#{userBean.viewUserBorrowingHistory(user.userId)}"
+                                     styleClass="action-btn">
                         <f:ajax execute="@this" render="@all"/>
                     </h:commandButton>
                 </h:column>

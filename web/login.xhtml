@@ -1,11 +1,16 @@
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
-
+    
+    <!--
+        Page Purpose:
+        1. Allows users to log in using their email and password.
+        2. Lets users without an account proceed to registration.
+    -->
+    
     <h:panelGroup rendered="#{pageController.currentPage eq 'login'}">
-        <h1>Login</h1>
+        <h1 class="page-title">Login</h1>
 
         <h:form id="loginForm">
             <h:panelGrid columns="3">
@@ -20,14 +25,12 @@
                 <h:message for="password" styleClass="error-message"/>
             </h:panelGrid>
 
-
-            <!-- 🔹 יישור הכפתורים לאותו קו -->
             <h:panelGrid columns="2" styleClass="button-container">
-                <h:commandButton value="Login" action="#{userBean.loginUser}">
+                <h:commandButton value="Login" action="#{userBean.loginUser}" styleClass="action-btn">
                     <f:ajax execute="@form" render="@all"/>
                 </h:commandButton>
 
-                <h:commandButton value="Create Account" action="#{pageController.setPage('register')}">
+                <h:commandButton value="Create Account" action="#{pageController.setPage('register')}" styleClass="action-btn">
                     <f:ajax execute="@form" render="@all"/>
                 </h:commandButton>
             </h:panelGrid>

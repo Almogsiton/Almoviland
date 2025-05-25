@@ -1,11 +1,15 @@
 package config;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /**
  * Application Configuration Class.
- * 
- * This class provides centralized access to constant configuration values
- * used throughout the application, such as admin credentials, default roles,
- * page navigation paths, database connection settings, and file upload limits.
+ *
+ * This class provides centralized access to constant configuration values used
+ * throughout the application, such as admin credentials, default roles, page
+ * navigation paths, database connection settings, and file upload limits.
  */
 public class AppConfig {
 
@@ -16,6 +20,9 @@ public class AppConfig {
     private static final String ADMIN_PASSWORD = "almoviland"; // will be encrypted before use
     private static final String ADMIN_ROLE = "ADMIN";
     private static final int ADMIN_LIMIT_BORROW_MAX = 3;
+
+    // === User Defaults ===
+    private static final String UNKNOWN_USER_NAME = "Unknown";
 
     // Database connection settings
     private static final String DATABASE_URL = "jdbc:derby://localhost:1527/almoviland";
@@ -32,7 +39,33 @@ public class AppConfig {
 
     // Default user role and borrowing settings
     private static final String DEFAULT_USER_ROLE = "USER";
-    private static final int DEFAULT_BORROW_LIMIT = 5;
+    private static final int DEFAULT_BORROW_LIMIT = 3;
+    private static final int MOVIES_PER_PAGE = 6;
+
+    // Borrowing status values
+    private static final String STATUS_PENDING_LOSS = "PENDING_LOSS";
+    private static final String STATUS_CONFIRMED_LOSS = "CONFIRMED_LOSS";
+
+    // Application Constants
+    private static final double POPULAR_RATING_THRESHOLD = 4.0;
+    private static final String DEFAULT_IMAGE_PATH = "/resources/images/default.PNG";
+    private static final String DEFAULT_MOVIE_TITLE = "Unknown Title";
+    private static final String BASE64_IMAGE_PREFIX = "data:image/png;base64,";
+
+    // === Credit Card Validation ===
+    public static final int CREDIT_CARD_LENGTH = 16;
+    public static final int CVC_LENGTH = 3;
+    public static final int MIN_MONTH = 1;
+    public static final int MAX_MONTH = 12;
+    private static final int EXPIRY_YEAR_START_OFFSET = 0;
+    private static final int EXPIRY_YEAR_RANGE = 10;
+    private static final double MONTHLY_SUBSCRIPTION_PRICE = 9.99;
+    private static final double LOSS_CHARGE_AMOUNT = 10.00;
+
+    // Review & Rating Settings
+    private static final int MAX_STARS = 5;
+    private static final int INVALID_RATING = 0;
+    private static final double DEFAULT_AVERAGE_RATING = 0.0;
 
     /**
      * @return the default admin ID
@@ -91,6 +124,13 @@ public class AppConfig {
     }
 
     /**
+     * @return the default admin name
+     */
+    public static String getUnknownUserName() {
+        return UNKNOWN_USER_NAME;
+    }
+
+    /**
      * @return the database password
      */
     public static String getDatabasePassword() {
@@ -138,4 +178,148 @@ public class AppConfig {
     public static String getLoginPage() {
         return LOGIN_PAGE;
     }
+
+    public static int getMoviesPerPage() {
+        return MOVIES_PER_PAGE;
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(getDatabaseUrl(), getDatabaseUser(), getDatabasePassword());
+    }
+
+    /**
+     * Returns the minimum average rating required for a movie to be considered
+     * popular.
+     *
+     * @return the popularity threshold as a double value
+     */
+    public static double getPopularRatingThreshold() {
+        return POPULAR_RATING_THRESHOLD;
+    }
+
+    /**
+     * Returns the default image path to use when a movie or category has no
+     * poster.
+     *
+     * @return the default image file path
+     */
+    public static String getDefaultImagePath() {
+        return DEFAULT_IMAGE_PATH;
+    }
+
+    /**
+     * Returns the default title string used when a movie title is not found.
+     *
+     * @return the default movie title
+     */
+    public static String getDefaultMovieTitle() {
+        return DEFAULT_MOVIE_TITLE;
+    }
+
+    /**
+     * Returns the prefix used for base64-encoded PNG images. This is typically
+     * used in <img> tags to embed images directly as data URIs.
+     *
+     * @return the base64 image prefix string
+     */
+    public static String getBase64ImagePrefix() {
+        return BASE64_IMAGE_PREFIX;
+    }
+
+    /**
+     * Returns the required length of a valid credit card number.
+     *
+     * @return credit card number length
+     */
+    public static int getCreditCardLength() {
+        return CREDIT_CARD_LENGTH;
+    }
+
+    /**
+     * Returns the required length of a valid CVC code.
+     *
+     * @return CVC length
+     */
+    public static int getCvcLength() {
+        return CVC_LENGTH;
+    }
+
+    /**
+     * @return the minimum allowed value for a month (inclusive).
+     */
+    public static int getMinMonth() {
+        return MIN_MONTH;
+    }
+
+    /**
+     * @return the maximum allowed value for a month (inclusive).
+     */
+    public static int getMaxMonth() {
+        return MAX_MONTH;
+    }
+
+    /**
+     * @return the maximum number of rating stars
+     */
+    public static int getMaxStars() {
+        return MAX_STARS;
+    }
+
+    /**
+     * @return the default average rating value when no movie is selected
+     */
+    public static double getDefaultAverageRating() {
+        return DEFAULT_AVERAGE_RATING;
+    }
+
+    /**
+     * @return the invalid rating value
+     */
+    public static int getInvalidRating() {
+        return INVALID_RATING;
+    }
+
+    /**
+     * @return the offset (in years) from the current year to start the expiry
+     * year list
+     */
+    public static int getExpiryYearStartOffset() {
+        return EXPIRY_YEAR_START_OFFSET;
+    }
+
+    /**
+     * @return the number of future years to include in the expiry year list
+     */
+    public static int getExpiryYearRange() {
+        return EXPIRY_YEAR_RANGE;
+    }
+
+    /**
+     * @return the status string for borrowings marked as pending loss
+     */
+    public static String getStatusPendingLoss() {
+        return STATUS_PENDING_LOSS;
+    }
+
+    /**
+     * @return the status string for borrowings marked as confirmed loss
+     */
+    public static String getStatusConfirmedLoss() {
+        return STATUS_CONFIRMED_LOSS;
+    }
+
+    /**
+     * @return the monthly subscription price in USD
+     */
+    public static double getMonthlySubscriptionPrice() {
+        return MONTHLY_SUBSCRIPTION_PRICE;
+    }
+
+    /**
+     * @return the fixed loss charge amount in USD
+     */
+    public static double getLossChargeAmount() {
+        return LOSS_CHARGE_AMOUNT;
+    }
+
 }

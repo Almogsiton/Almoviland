@@ -1,40 +1,56 @@
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
+    <!--
+    Page Purpose:
+    1. Displays the borrowing history of a selected user for admin review.
+    2. Shows movie title, borrow date, return date (if available), and status.
+    3. Provides a button to return to the user management page.
+    -->
+
     <h:panelGroup rendered="#{pageController.currentPage eq 'userBorrowingHistory'}">
-        <h1>Borrowing History</h1>
-
-        <!-- 🔹 כפתור חזרה -->
         <h:form>
-            <h:commandButton value="🔙 Back" action="#{pageController.setPage('usersManagement')}">
-                <f:ajax execute="@form" render="@all"/>
-            </h:commandButton>
-        </h:form>
 
-        <h:form id="borrowingTableForm">
-            <h:dataTable value="#{userBean.borrowingHistory}" var="borrowing" border="1">
+            <h2 class="page-title">📜 Borrowing History</h2>
+
+            <h:dataTable value="#{userBean.borrowingHistory}" var="borrow" styleClass="borrow-table">
                 <h:column>
-                    <f:facet name="header">Movie Title</f:facet>
-                        #{movieBean.getMovieTitleById(borrowing.movieId)}
+                    <f:facet name="header">Title</f:facet>
+                        #{movieBean.getMovieTitleById(borrow.movieId)}
                 </h:column>
 
+                <h:column>
+                    <f:facet name="header">Borrowed On</f:facet>
+                    <h:outputText value="#{borrow.borrowDate}">
+                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                    </h:outputText>
+                </h:column>
 
                 <h:column>
-                    <f:facet name="header">Borrow Date</f:facet>
-                        #{borrowing.borrowDate}
+                    <f:facet name="header">Returned On</f:facet>
+                    <h:panelGroup rendered="#{borrow.returnDate != null}">
+                        <h:outputText value="#{borrow.returnDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                        </h:outputText>
+                    </h:panelGroup>
+                    <h:outputText value="Not Returned" rendered="#{borrow.returnDate == null}"/>
                 </h:column>
-                <h:column>
-                    <f:facet name="header">Return Date</f:facet>
-                        #{borrowing.returnDate != null ? borrowing.returnDate : 'Not Returned'}
-                </h:column>
+
                 <h:column>
                     <f:facet name="header">Status</f:facet>
-                        #{borrowing.returnDate != null ? 'Returned' : 'Borrowed'}
+                    <h:outputText value="#{borrow.returnDate != null ? 'Returned' : 'Borrowed'}"/>
                 </h:column>
             </h:dataTable>
+
+            <br/>
+            <h:commandButton value="⬅️ Back to Users"
+                             action="#{pageController.setPage('usersManagement')}"
+                             styleClass="action-btn">
+                <f:ajax render="@all"/>
+            </h:commandButton>
+
         </h:form>
     </h:panelGroup>
 </ui:composition>

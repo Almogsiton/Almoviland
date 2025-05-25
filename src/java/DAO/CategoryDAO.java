@@ -7,8 +7,13 @@ import java.util.List;
 import config.AppConfig;
 
 /**
- * Data Access Object (DAO) for managing category-related database operations.
+ * Data Access Object (DAO) responsible for performing all database operations
+ * related to categories in the system. This includes retrieving all categories,
+ * adding new ones, checking for duplicates, deleting by ID, updating details,
+ * and fetching associated poster images. 
+ * All database interactions are performed using JDBC with proper resource management.
  */
+
 public class CategoryDAO {
 
     /**
@@ -19,14 +24,10 @@ public class CategoryDAO {
     public static List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT CATEGORY_ID, NAME_CATEGORY, DESCRIPTION, POSTER_IMAGE FROM CATEGORIES";
-
         try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
+                AppConfig.getDatabaseUrl(),
+                AppConfig.getDatabaseUser(),
+                AppConfig.getDatabasePassword()); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Category category = new Category(
                         rs.getString("CATEGORY_ID"),
@@ -39,7 +40,6 @@ public class CategoryDAO {
         } catch (Exception e) {
             System.out.println("Error retrieving categories: " + e.getMessage());
         }
-
         return categories;
     }
 
@@ -54,20 +54,12 @@ public class CategoryDAO {
             System.out.println("Error: Category '" + category.getName() + "' already exists!");
             return false;
         }
-
         String sql = "INSERT INTO CATEGORIES (CATEGORY_ID, NAME_CATEGORY, DESCRIPTION, POSTER_IMAGE) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = AppConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, category.getCategoryId());
             pstmt.setString(2, category.getName().trim());
             pstmt.setString(3, category.getDescription().trim());
             pstmt.setBytes(4, category.getPosterImage() != null ? category.getPosterImage() : new byte[0]);
-
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Error adding category: " + e.getMessage());
@@ -84,11 +76,7 @@ public class CategoryDAO {
     public static boolean categoryExists(String categoryName) {
         String sql = "SELECT COUNT(*) FROM CATEGORIES WHERE LOWER(TRIM(NAME_CATEGORY)) = LOWER(TRIM(?))";
 
-        try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = AppConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, categoryName.trim());
             ResultSet rs = pstmt.executeQuery();
@@ -109,16 +97,9 @@ public class CategoryDAO {
      */
     public static boolean deleteCategory(String categoryId) {
         String sql = "DELETE FROM CATEGORIES WHERE CATEGORY_ID = ?";
-
-        try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = AppConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, categoryId);
             int affectedRows = pstmt.executeUpdate();
-
             if (affectedRows > 0) {
                 System.out.println("Deleted category: " + categoryId);
                 return true;
@@ -140,19 +121,11 @@ public class CategoryDAO {
      */
     public static byte[] getCategoryImage(String categoryId) {
         String sql = "SELECT POSTER_IMAGE FROM CATEGORIES WHERE CATEGORY_ID = ?";
-
-        try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = AppConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, categoryId);
             ResultSet rs = pstmt.executeQuery();
-
             if (rs.next()) {
-                return rs.getBytes("POSTER_IMAGE");
-            }
+                return rs.getBytes("POSTER_IMAGE");            }
         } catch (SQLException e) {
             System.out.println("Error retrieving category image: " + e.getMessage());
         }
@@ -168,18 +141,11 @@ public class CategoryDAO {
      */
     public static boolean updateCategory(Category category) {
         String sql = "UPDATE CATEGORIES SET NAME_CATEGORY=?, DESCRIPTION=?, POSTER_IMAGE=? WHERE CATEGORY_ID=?";
-
-        try (Connection conn = DriverManager.getConnection(
-                    AppConfig.getDatabaseUrl(),
-                    AppConfig.getDatabaseUser(),
-                    AppConfig.getDatabasePassword());
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = AppConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, category.getName());
             pstmt.setString(2, category.getDescription());
             pstmt.setBytes(3, category.getPosterImage());
             pstmt.setString(4, category.getCategoryId());
-
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Error updating category: " + e.getMessage());

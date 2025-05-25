@@ -1,24 +1,38 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!--
+    Page Purpose:
+    1. Allows users to create a new account with personal and credit card information.
+    2. Validates password match, email format, and credit card fields.
+    3. Enables navigation back to the login page.
+    -->
+
 
     <h:panelGroup rendered="#{pageController.currentPage eq 'register'}">
-        <h1>Register</h1>
+        <h1 class="page-title">Register</h1>
 
-        <!-- 🛈 הודעה על מגבלת השאלה -->
-        <h:panelGroup styleClass="info-box">
-            <p>
-                🎉 With your subscription, you can borrow up to 
-                <strong>#{userBean.borrowLimit}</strong> movies!
-            </p>
+        <!-- 🛈 Borrowing limit info -->
+        <!-- Font Awesome icon: displays a gift symbol (🎁) for visual enhancement only.
+     Used for decoration near subscription or benefit-related text. -->
+        <i class="fa fa-gift" aria-hidden="true"></i>
+
+        <h:panelGroup styleClass="subscription-info">
+            <i class="fa fa-gift" aria-hidden="true"></i>
+            <span>
+                With your subscription, you can borrow up to 
+                <strong>#{userBean.borrowLimit}</strong> movies!<br/>
+                🎁 Monthly subscription price: 
+                <strong>$#{userBean.monthlySubscriptionPrice}</strong>
+            </span>
         </h:panelGroup>
 
-        <!-- 🔹 טופס אחוד -->
+        <!-- 🔹 Unified form -->
         <h:form id="registerFormFull">
-            <h:panelGrid columns="4">
+            <h:panelGrid columns="1" styleClass="form-grid">
 
-                <!-- 🧑 Full Name -->
                 <h:outputLabel for="name" value="Full Name:"/>
                 <h:inputText id="name" value="#{userBean.newUser.name}" required="true"
                              requiredMessage="Full name is required!"/>
@@ -26,21 +40,12 @@
 
                 <h:outputLabel for="email" value="Email:"/>
                 <h:inputText id="email" value="#{userBean.newUser.email}" required="true"
-                             requiredMessage="Email is required!">
+                             requiredMessage="Email is required!"
+                             validatorMessage="Please enter a valid email address.">>
                     <f:validateRegex pattern="[^@]+@[^@]+\.[^@]+"/>
-
-
-
-
-
-
-
                 </h:inputText>
                 <h:message for="email" styleClass="error-message"/>
 
-
-
-                <!-- 🔐 Password -->
                 <h:outputLabel for="password" value="Password:"/>
                 <h:inputSecret id="password" value="#{userBean.newUser.password}" required="true"
                                requiredMessage="Password is required!">
@@ -48,7 +53,6 @@
                 </h:inputSecret>
                 <h:message for="password" styleClass="error-message"/>
 
-                <!-- 🔁 Confirm Password -->
                 <h:outputLabel for="confirmPassword" value="Confirm Password:"/>
                 <h:inputSecret id="confirmPassword" value="#{userBean.confirmPassword}" required="true"
                                requiredMessage="Please confirm your password!">
@@ -56,19 +60,16 @@
                 </h:inputSecret>
                 <h:message for="confirmPassword" styleClass="error-message"/>
 
-                <!-- 💳 Credit Card Number -->
                 <h:outputLabel for="creditCard" value="Credit Card Number:"/>
                 <h:inputText id="creditCard" value="#{userBean.creditCardNumber}" required="true"
                              maxlength="16" requiredMessage="Credit card number is required!"/>
                 <h:message for="creditCard" styleClass="error-message"/>
 
-                <!-- 🔐 CVC -->
                 <h:outputLabel for="cvc" value="CVC:"/>
                 <h:inputText id="cvc" value="#{userBean.cvc}" required="true"
                              maxlength="3" requiredMessage="CVC is required!"/>
                 <h:message for="cvc" styleClass="error-message"/>
 
-                <!-- 📆 Expiry Month -->
                 <h:outputLabel for="expiryMonth" value="Expiry Month:"/>
                 <h:selectOneMenu id="expiryMonth" value="#{userBean.expiryMonth}" required="true">
                     <f:selectItem itemLabel="-- Month --" itemValue="" noSelectionOption="true"/>
@@ -76,7 +77,6 @@
                 </h:selectOneMenu>
                 <h:message for="expiryMonth" styleClass="error-message"/>
 
-                <!-- 📆 Expiry Year -->
                 <h:outputLabel for="expiryYear" value="Expiry Year:"/>
                 <h:selectOneMenu id="expiryYear" value="#{userBean.expiryYear}" required="true">
                     <f:selectItem itemLabel="-- Year --" itemValue="" noSelectionOption="true"/>
@@ -87,16 +87,20 @@
 
             <br/>
 
-            <!-- 🔘 Buttons -->
             <h:panelGrid columns="2" styleClass="button-container">
-                <h:commandButton value="Register" action="#{userBean.registerUser}" />
+                <h:commandButton value="Register"
+                                 action="#{userBean.registerUser}"
+                                 styleClass="action-btn"/>
 
-                <h:commandButton value="Back to Login" action="#{pageController.setPage('login')}">
+                <h:commandButton value="Back to Login"
+                                 action="#{pageController.setPage('login')}"
+                                 styleClass="action-btn"
+                                 immediate="true">
                     <f:ajax execute="@form" render="@all"/>
                 </h:commandButton>
             </h:panelGrid>
 
-            <!-- הודעות כלליות -->
+            <!-- Global messages -->
             <h:messages id="messages" globalOnly="true" showDetail="true"
                         infoClass="success-message" errorClass="error-message"/>
         </h:form>

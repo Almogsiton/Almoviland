@@ -6,6 +6,12 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
+    <!--
+       Page Purpose:
+       1. Displays the main navigation bar for accessing key pages in the system.
+       2. Dynamically shows links based on the user's login status and role (e.g., login/register for guests, profile/admin for logged-in users).
+    -->
+
     <h:head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     </h:head>
@@ -21,7 +27,7 @@
                 <i class="fas fa-search nav-icon"></i> Search
             </h:commandLink>
 
-            <!-- הצגת אפשרויות בהתאם למצב המשתמש -->
+            <!-- Show options based on user's login state -->
             <h:panelGroup rendered="#{userBean.loggedInUser == null}">
                 <h:commandLink class="nav-link" action="#{pageController.setPage('login')}">
                     <f:ajax render="@all"/>
@@ -39,9 +45,7 @@
                 <i class="fas fa-envelope nav-icon"></i> Contact Us
             </h:commandLink>
 
-
-
-            <!-- 🔹 כפתור Admin Dashboard יוצג רק למנהלים -->
+            <!-- 🔹 Admin Dashboard button visible only for admins -->
             <h:panelGroup rendered="#{userBean.loggedInUser != null and userBean.loggedInUser.role eq 'ADMIN'}">
                 <h:commandLink class="nav-link" action="#{pageController.setPage('admin')}">
                     <f:ajax render="@all"/>
@@ -49,7 +53,7 @@
                 </h:commandLink>
             </h:panelGroup>
 
-            <!-- ✅ מוצג רק אם המשתמש מחובר: כפתור פרופיל, שלום, וכפתור יציאה -->
+            <!-- ✅ Shown only if user is logged in: profile button, greeting, and logout -->
             <h:panelGroup rendered="#{userBean.loggedInUser != null}">
                 <h:commandLink class="nav-link" action="#{pageController.setPage('profile')}">
                     <f:ajax render="@all"/>
@@ -58,12 +62,12 @@
 
                 <h:outputText value="Hello, #{userBean.loggedInUser.name}!" style="margin-left: 10px; margin-right: 10px;"/>
 
-                <h:commandButton value="Logout" action="#{userBean.logoutUser}" styleClass="logout-button">
+                <h:commandButton value="⎋ Logout"
+                                 action="#{userBean.logoutUser}"
+                                 styleClass="action-btn">
                     <f:ajax execute="@form" render="@all"/>
                 </h:commandButton>
             </h:panelGroup>
-
-
         </div>
     </h:form>
 

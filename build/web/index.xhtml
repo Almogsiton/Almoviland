@@ -4,116 +4,130 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <!--
+    Page Purpose:
+    1. Serves as the main layout template for the Almoviland application.
+    2. Dynamically includes content pages based on the current page state (managed by pageController).
+    3. Loads global styles, scripts, header navigation, and system-wide messages.
+    -->
+
     <h:head>
         <h:outputStylesheet name="css/styles.css"/>
         <h:outputScript name="js/scripts.js"/>
         <title>Almoviland</title>
 
     </h:head>
-    <h:body>   
+    <h:body> 
 
-
-        <!--  HEADER: תפריט הניווט הראשי -->
+        <!-- 🔹 Main navigation header -->
         <ui:include src="header.xhtml"/>
-        <!-- 🔹 הצגת הודעות מערכת לכל הדפים -->
-        <h:messages id="globalMessages" globalOnly="true" showDetail="true"
-                    errorClass="error-message" infoClass="success-message"/>
+        <!-- 🔹 Global system messages displayed on all pages -->
+        <h:messages id="globalMessages"
+                    globalOnly="true"
+                    showSummary="true"
+                    showDetail="true"
+                    errorClass="error-message"
+                    infoClass="success-message"
+                    warnClass="warning-message"
+                    fatalClass="fatal-message"/>
 
         <h:panelGroup id="content">
 
-            <!-- עמוד הבית -->
+            <!-- 🔹 Home Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'home'}">
                 <ui:include src="home.xhtml"/>
             </h:panelGroup>
 
-
-            <!-- 🔹 עמוד חיפוש סרטים -->
+            <!-- 🔹 Movie Search Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'search'}">
                 <ui:include src="search.xhtml"/>
             </h:panelGroup>
 
-
-
-
-            <!-- 🔹 עמוד התחברות -->
+            <!-- 🔹 Login Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'login'}">
                 <ui:include src="login.xhtml"/>
             </h:panelGroup>
 
-
-            <!-- 🔹 עמוד הרשמה -->
+            <!-- 🔹 Registration Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'register'}">
                 <ui:include src="register.xhtml"/>
             </h:panelGroup>
 
-
+            <!-- 🔹 Contact Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'contact'}">
                 <ui:include src="contact.xhtml"/>
             </h:panelGroup>
 
+            <!-- 🔹 Admin Dashboard -->
+            <h:panelGroup rendered="#{pageController.currentPage eq 'admin'}">
+                <ui:include src="adminDashboard.xhtml"/>
+            </h:panelGroup>
 
-            <!-- 🔹 דף ניהול המערכת (Admin Dashboard) -->
-            <ui:include src="adminDashboard.xhtml"/>
-
-            <!-- 🔹 דף ניהול סרטים -->
+            <!-- 🔹 Movie Management Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'moviesManagement'}">
                 <ui:include src="moviesManagement.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף ניהול קטגוריות -->
+            <!-- 🔹 Category Management Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'categoriesManagement'}">
                 <ui:include src="categoriesManagement.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף עריכת סרטים -->
+            <!-- 🔹 Movie Edit Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'editMovie'}">
                 <ui:include src="editMovie.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף עריכת קטגוריות (חדש) -->
+            <!-- 🔹 Category Edit Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'editCategory'}">
                 <ui:include src="editCategory.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף ניהול משתמשים -->
+            <!-- 🔹 User Management Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'usersManagement'}">
                 <ui:include src="usersManagement.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף היסטוריית השאלות של משתמש -->
+            <!-- 🔹 User Borrowing History Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'userBorrowingHistory'}">
                 <ui:include src="userBorrowingHistory.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף פרטי הסרט-->
+            <!-- 🔹 Movie Details Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'movieDetails'}">
                 <ui:include src="movieDetails.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף אישור הזמנה-->
+            <!-- 🔹 Borrow Confirmation Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'borrowConfirmation'}">
                 <ui:include src="borrowConfirmation.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף הוספת ביקורת -->
+            <!-- 🔹 Add Review Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'addReview'}">
                 <ui:include src="addReview.xhtml"/>
             </h:panelGroup>
 
-            <!-- 🔹 דף צפייה בביקורות -->
+            <!-- 🔹 View Reviews Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'viewReviews'}">
                 <ui:include src="viewReviews.xhtml"/>
             </h:panelGroup>
 
-
-            <!-- 🔹 דף פרופיל המשתמש -->
+            <!-- 🔹 User Profile Page -->
             <h:panelGroup rendered="#{pageController.currentPage eq 'profile'}">
                 <ui:include src="profile.xhtml"/>
             </h:panelGroup>
 
+            <!-- 🔹 Report Movie Loss Page -->
+            <h:panelGroup rendered="#{pageController.currentPage eq 'reportLoss'}">
+                <ui:include src="reportLoss.xhtml"/>
+            </h:panelGroup>
 
-
-
+            <!-- 🔹 Admin Loss Requests Page -->
+            <h:panelGroup rendered="#{pageController.currentPage eq 'adminLossRequests'}">
+                <ui:include src="adminLossRequests.xhtml"/>
+            </h:panelGroup>
         </h:panelGroup>
     </h:body>
 </html>
