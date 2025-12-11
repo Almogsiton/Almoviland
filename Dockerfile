@@ -1,8 +1,11 @@
 # Stage 1: Build the application using Ant
 FROM eclipse-temurin:17-jdk-jammy AS build
 
-# Install Ant
-RUN apt-get update && apt-get install -y ant
+# Install Ant and wget
+RUN apt-get update && apt-get install -y ant wget
+
+# Download NetBeans CopyLibs Task (required for the build)
+RUN wget -P /app/lib https://github.com/mojohaus/mojo-parent/raw/master/netbeans-ant-tasks/src/main/resources/org/netbeans/modules/java/j2seproject/copylibstask/org-netbeans-modules-java-j2seproject-copylibstask.jar
 
 # Set the working directory
 WORKDIR /app
@@ -11,7 +14,7 @@ WORKDIR /app
 COPY . .
 
 # Build the project (creates the WAR file in dist/)
-RUN ant -noinput -buildfile build.xml dist
+RUN ant -Dlibs.CopyLibs.classpath=/app/lib/org-netbeans-modules-java-j2seproject-copylibstask.jar -noinput -buildfile build.xml dist
 
 # Stage 2: Run the application in GlassFish
 FROM ghcr.io/eclipse-ee4j/glassfish:latest
