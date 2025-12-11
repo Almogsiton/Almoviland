@@ -25,7 +25,9 @@ public class AppConfig {
     private static final String UNKNOWN_USER_NAME = "Unknown";
 
     // Database connection settings
-    private static final String DATABASE_URL = "jdbc:derby://localhost:1527/almoviland";
+    // Changed to Embedded driver for easier cloud deployment (no separate server
+    // needed)
+    private static final String DATABASE_URL = "jdbc:derby:almoviland;create=true";
     private static final String DATABASE_USER = "almoviland";
     private static final String DATABASE_PASSWORD = "almoviland";
 
@@ -281,7 +283,7 @@ public class AppConfig {
 
     /**
      * @return the offset (in years) from the current year to start the expiry
-     * year list
+     *         year list
      */
     public static int getExpiryYearStartOffset() {
         return EXPIRY_YEAR_START_OFFSET;
