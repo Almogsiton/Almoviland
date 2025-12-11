@@ -1,0 +1,30 @@
+<project name="Almoviland" default="dist" basedir=".">
+    <property name="src" location="src/java"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+    <property name="web" location="web"/>
+    <property name="lib" location="lib"/>
+
+    <target name="init">
+        <mkdir dir="${build}/classes"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${lib}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}/classes" includeantruntime="false" source="17" target="17" encoding="UTF-8" debug="true">
+             <classpath>
+                <fileset dir="${lib}">
+                    <include name="*.jar"/>
+                </fileset>
+             </classpath>
+        </javac>
+    </target>
+
+    <target name="dist" depends="compile">
+        <war destfile="${dist}/Almoviland.war" webxml="${web}/WEB-INF/web.xml">
+            <fileset dir="${web}"/>
+            <classes dir="${build}/classes"/>
+        </war>
+    </target>
+</project>

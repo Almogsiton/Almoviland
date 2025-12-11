@@ -4,8 +4,9 @@ FROM eclipse-temurin:17-jdk-jammy AS build
 # Install Ant and wget
 RUN apt-get update && apt-get install -y ant wget
 
-# Download NetBeans CopyLibs Task (required for the build)
-RUN wget -P /app/lib https://github.com/mojohaus/mojo-parent/raw/master/netbeans-ant-tasks/src/main/resources/org/netbeans/modules/java/j2seproject/copylibstask/org-netbeans-modules-java-j2seproject-copylibstask.jar
+# Download Jakarta EE 10 API (required for compilation)
+RUN mkdir -p /app/lib && \
+    wget -O /app/lib/jakarta.jakartaee-api.jar https://repo1.maven.org/maven2/jakarta/platform/jakarta.jakartaee-api/10.0.0/jakarta.jakartaee-api-10.0.0.jar
 
 # Set the working directory
 WORKDIR /app
@@ -13,8 +14,8 @@ WORKDIR /app
 # Copy the project files
 COPY . .
 
-# Build the project (creates the WAR file in dist/)
-RUN ant -Dlibs.CopyLibs.classpath=/app/lib/org-netbeans-modules-java-j2seproject-copylibstask.jar -noinput -buildfile build.xml dist
+# Build the project using the custom simple build script
+RUN ant -noinput -buildfile build-simple.xml dist
 
 # Stage 2: Run the application in GlassFish
 FROM ghcr.io/eclipse-ee4j/glassfish:latest
