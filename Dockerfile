@@ -1,5 +1,8 @@
 # Stage 1: Build the application using Ant
-FROM frekele/ant:1.10.14-jdk17 AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
+
+# Install Ant
+RUN apt-get update && apt-get install -y ant
 
 # Set the working directory
 WORKDIR /app
