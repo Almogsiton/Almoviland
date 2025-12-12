@@ -21,7 +21,7 @@ RUN ant -noinput -buildfile build-simple.xml dist
 FROM ghcr.io/eclipse-ee4j/glassfish:latest
 
 # Copy the WAR file from the build stage to the GlassFish autodeploy directory
-COPY --from=build /app/dist/Almoviland.war ${GLASSFISH_HOME}/glassfish/domains/domain1/autodeploy/
+COPY --from=build /app/dist/Almoviland.war ${GLASSFISH_HOME}/glassfish/domains/domain1/autodeploy/ROOT.war
 
 # Ensure the default port is exposed (Render will map this externally)
 EXPOSE 8080
