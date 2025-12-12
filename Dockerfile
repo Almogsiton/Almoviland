@@ -20,6 +20,9 @@ RUN ant -noinput -buildfile build-simple.xml dist
 # Stage 2: Run the application in GlassFish
 FROM ghcr.io/eclipse-ee4j/glassfish:latest
 
+# Remove default GlassFish index.html so our app takes over the root context
+RUN rm -f ${GLASSFISH_HOME}/glassfish/domains/domain1/docroot/index.html
+
 # Copy the WAR file from the build stage to the GlassFish autodeploy directory
 COPY --from=build /app/dist/Almoviland.war ${GLASSFISH_HOME}/glassfish/domains/domain1/autodeploy/ROOT.war
 
